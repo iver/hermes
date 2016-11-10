@@ -1,0 +1,11 @@
+language: go
+
+notifications:
+  email: false
+
+branches:
+  only:
+    - master
+    - develop
+
+# install:

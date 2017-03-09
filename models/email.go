@@ -1,5 +1,6 @@
 package models
 
+// Email structure
 type Email struct {
 	SenderName  string
 	SenderEmail string

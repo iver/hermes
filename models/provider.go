@@ -1,6 +1,6 @@
 package models
 
-//interface provider
+// Provider interface
 type Provider interface {
 	sendEmail(email Email) error
 }

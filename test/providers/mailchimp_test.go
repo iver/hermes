@@ -1,7 +1,6 @@
 package providers_test
 
 import (
-	"log"
 	"os"
 	"testing"
 
@@ -12,18 +11,18 @@ import (
 func TestMailchimpSendEmail(t *testing.T) {
 	var provider = p.Mailchimp{}
 	userEmail := os.Getenv("MANDRILL_USER")
-	template := "<h1>notifik</h1><br><h3>Da click en el enlace o copialo en tu navegador<h3><h4>http://localhost:4000/users/sss/active</h4>"
-	rec := []string{userEmail}
+	template := "<div><h1>Hola desde mailchimp<h1><h4>Template desde hermes</h4></div>"
+	recipients := []string{userEmail, "mau.cdr.19@gmail.com"}
 	email := models.Email{
-		Subject:     "Bienvenido a Notifik",
+		Subject:     "Hola desde mailchimp",
 		SenderEmail: "mauricio@optometrik.mx",
 		SenderName:  "Alguien",
-		Recipients:  rec,
-		Content:     template,
+		Recipients:  recipients,
+		Template:    template,
 	}
-	log.Println(rec)
+
 	if err := provider.SendEmail(email); err != nil {
-		t.Error("Ya valio: ", err)
+		t.Error("hermes: error in provider", err)
 	}
 
 	return

@@ -3,8 +3,8 @@ package models
 import "errors"
 
 var (
-	ErrLimitDailyMessages  = errors.New(`Limite de mensajes diarios alcanzado`)
-	ErrLimitPerHourMesages = errors.New(`Limite de mensajes por hora  alcanzado`)
-	ErrServerError         = errors.New(`Error inesperado`)
-	ErrAPIKeyNotDefined    = errors.New(`Api key no definida`)
+	ErrLimitDailyMessages  = errors.New(`provider: Daily messages limit reached`)
+	ErrLimitPerHourMesages = errors.New(`provider: Per hour messages limit reached`)
+	ErrServerError         = errors.New(`provider: Internal error`)
+	ErrAPIKeyNotDefined    = errors.New(`provider: APIKEY not defined`)
 )

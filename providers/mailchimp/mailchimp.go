@@ -2,7 +2,8 @@ package providers
 
 import (
 	"fmt"
-    "os"
+	"os"
+
 	"github.com/ivan-iver/hermes/models"
 	"github.com/mattbaird/gochimp"
 )
@@ -13,7 +14,7 @@ type Mailchimp struct {
 //  sendemail function with mailchimp provider
 func (p *Mailchimp) SendEmail(email models.Email) (err error) {
 
-    apiKey := os.Getenv("MANDRILL_KEY")
+	apiKey := os.Getenv("MANDRILL_KEY")
 	mandrillAPI, err := gochimp.NewMandrill(apiKey)
 	if err != nil {
 		fmt.Println("Error instantiating client")
@@ -21,7 +22,7 @@ func (p *Mailchimp) SendEmail(email models.Email) (err error) {
 	}
 
 	templateName := "welcome email"
-	contentVar := gochimp.Var{"main", email.Content}
+	contentVar := gochimp.Var{"main", email.Template}
 	content := []gochimp.Var{contentVar}
 
 	_, err = mandrillAPI.TemplateAdd(templateName, fmt.Sprintf("%s", contentVar.Content), true)
@@ -37,9 +38,11 @@ func (p *Mailchimp) SendEmail(email models.Email) (err error) {
 		fmt.Printf("Error rendering template: %v", err)
 		return err
 	}
-	eml := email.Recipients[0]
-	recipients := []gochimp.Recipient{
-		gochimp.Recipient{Email: eml},
+
+	recipients := []gochimp.Recipient{}
+
+	for _, email := range email.Recipients {
+		recipients = append(recipients, gochimp.Recipient{Email: email})
 	}
 
 	message := gochimp.Message{

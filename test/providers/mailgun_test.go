@@ -11,18 +11,18 @@ import (
 func TestMailgunSendEmail(t *testing.T) {
 	var provider = p.Mailgun{}
 	userEmail := os.Getenv("MG_EMAIL_TO")
-	template := "<h1>notifik</h1><br><h4>Hola desde mailgun</h4>"
-	rec := []string{userEmail}
+    template := "<div><h1>Hola desde Mailgun<h1><h4>Template desde hermes</h4></div>"
+	recipients := []string{userEmail,"mau.cdr.19@gmail.com"}
 	email := models.Email{
 		Subject:     "Hola desde mailgun",
 		SenderEmail: "person@hermes.mx",
 		SenderName:  "Alguien",
-		Recipients:  rec,
+		Recipients:  recipients,
 		Content:     template,
 	}
 
 	if err := provider.SendEmail(email); err != nil {
-		t.Error("Ya valio: ", err)
+		t.Error("hermes: error in provider", err)
 	}
 
 	return

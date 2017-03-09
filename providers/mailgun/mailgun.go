@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/ivan-iver/hermes/models"
 	"gopkg.in/mailgun/mailgun-go.v1"
@@ -25,12 +26,8 @@ func (p *Mailgun) SendEmail(email models.Email) (err error) {
 		email.SenderEmail,
 		email.Subject,
 		"content",
-		"mau.cdr.19@gmail.com")
-	/*message := mailgun.NewMessage(
-	"sender@example.com",
-	"Fancy subject!",
-	"Hello from Mailgun Go!",
-	"recipient@example.com")*/
+		strings.Join(email.Recipients, ","))
+
 	resp, id, err := mg.Send(message)
 	if err != nil {
 		log.Fatal(err)

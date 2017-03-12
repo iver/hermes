@@ -1,12 +1,13 @@
 package models
 
-// Email structure
-type Email struct {
-	SenderName  string
-	SenderEmail string
-	Recipients  []string
-	Subject     string
-	Content     string
-	Attachments interface{}
-	Template    string
+
+// Email interface
+type Email interface {
+   AddSenderEmail(e String) error
+   AddSubject(s string) error
+   AddSenderName(name string) error
+   AddRecipients(e ..string) error
+   AddAttachment(path string) error
+   AddTemplate(t string) error
+   AddContent(c string) error
 }

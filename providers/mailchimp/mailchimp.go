@@ -1,62 +1,43 @@
-package providers
+package mailchimp
 
 import (
 	"fmt"
 	"os"
-
-	"github.com/ivan-iver/hermes/models"
 	"github.com/mattbaird/gochimp"
 )
 
 type Mailchimp struct {
+	 APIKey string
 }
 
+func (p *Mailchimp) Init() (err error) {
+     p.APIKey = os.Getenv("MANDRILL_KEY")
+	  if err != nil {
+        fmt.Println("Error instantiating client")
+    }
+	return
+}
+
+
 //  sendemail function with mailchimp provider
-func (p *Mailchimp) SendEmail(email models.Email) (err error) {
+func (p *Mailchimp) SendEmail(email MailchimpEmail) (err error) {
 
-	apiKey := os.Getenv("MANDRILL_KEY")
-	mandrillAPI, err := gochimp.NewMandrill(apiKey)
+    mandrillAPI, err := gochimp.NewMandrill(p.APIKey)
 	if err != nil {
-		fmt.Println("Error instantiating client")
 		return err
 	}
-
-	templateName := "welcome email"
-	contentVar := gochimp.Var{"main", email.Template}
-	content := []gochimp.Var{contentVar}
-
-	_, err = mandrillAPI.TemplateAdd(templateName, fmt.Sprintf("%s", contentVar.Content), true)
-	if err != nil {
-		fmt.Printf("Error adding template: %v", err)
-		return err
-	}
-
-	defer mandrillAPI.TemplateDelete(templateName)
-
-	renderedTemplate, err := mandrillAPI.TemplateRender(templateName, content, nil)
-	if err != nil {
-		fmt.Printf("Error rendering template: %v", err)
-		return err
-	}
-
-	recipients := []gochimp.Recipient{}
-
-	for _, email := range email.Recipients {
-		recipients = append(recipients, gochimp.Recipient{Email: email})
-	}
-
-	message := gochimp.Message{
-		Html:      renderedTemplate,
-		Subject:   email.Subject,
-		FromEmail: email.SenderEmail,
-		FromName:  email.SenderName,
-		To:        recipients,
-	}
-
-	if _, err = mandrillAPI.MessageSend(message, false); err != nil {
+	if _, err = mandrillAPI.MessageSend(email.GochimpM, false); err != nil {
 		fmt.Println("Error sending message")
 		return err
 	}
 
 	return
+}
+
+func (p *Mailchimp) NewEmail(se string , sn string , s string ,t string) (m MailchimpEmail,err error) {
+	 m.AddSenderEmail(se)
+	 m.AddSenderName(sn)
+	 m.AddSubject(s)
+	 m.AddTemplate(t)
+     return 
 }

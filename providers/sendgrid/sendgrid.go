@@ -1,50 +1,47 @@
-package providers
+package sendgrid
 
 import (
 	"os"
-		"fmt"
-		"log"
-	"github.com/ivan-iver/hermes/models"
+    "log"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"github.com/sendgrid/sendgrid-go"
+	"errors"
 )
 
 type Sendgrid struct {
+	 APIKey string
 }
 
-// SendEmail method with mailgun provider
-func (p *Sendgrid) SendEmail(email models.Email) (er error) {
+func (p *Sendgrid) Init() (err error) {
+   	p.APIKey = os.Getenv("SENDGRID_API_KEY")
+	return
+}
 
-	APIKey := os.Getenv("SENDGRID_API_KEY")
-	from := mail.NewEmail(email.SenderName, email.SenderEmail)
-	subject := email.Subject
-	content := mail.NewContent("text/plain", email.Template)
 
-	recipients := []*mail.Email{}
-
-	for _, email := range email.Recipients {
-        eml := mail.Email{Address: email}
-		recipients = append(recipients, &eml )
-	}
-
-	m := mail.NewV3Mail()
-	m.SetFrom(from)
-	m.Subject = subject
-	ps := mail.NewPersonalization()
-    ps.AddTos(recipients...)
-	m.AddPersonalizations(ps)
-	m.AddContent(content)
-	request := sendgrid.GetRequest(APIKey, "/v3/mail/send", "https://api.sendgrid.com")
+//  sendemail function with sendgrid provider
+func (p *Sendgrid) SendEmail(email SendgridEmail) (err error) {
+	request := sendgrid.GetRequest(p.APIKey, "/v3/mail/send", "https://api.sendgrid.com")
 	request.Method = "POST"
-	request.Body = mail.GetRequestBody(m)
+	request.Body = mail.GetRequestBody(email.SendgridM)
 	response, err := sendgrid.API(request)
+	log.Println(response,err)
 	if err != nil {
         log.Println(err)
 		return err
     } else {
-        fmt.Println(response.StatusCode)
-        fmt.Println(response.Body)
-        fmt.Println(response.Headers)
+		
+        if response.StatusCode == 429 {
+             return errors.New(`error sending message`)
+		}
+		  return response
     }
-	return
+}
+
+func (p *Sendgrid) NewEmail(se string , sn string , s string ,t string) (m SendgridEmail,err error) {
+	 m=NewEmail()
+	 m.AddSubject(s)
+	 m.AddSenderEmail(se)
+	 m.AddContent(t)
+	 m.AddSenderName(sn)
+     return 
 }

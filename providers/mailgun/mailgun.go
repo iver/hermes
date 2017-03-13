@@ -1,9 +1,9 @@
 package mailgun
 
 import (
-	"log"
 	"os"
-    "fmt"
+    "log"
+	"errors"
 	"gopkg.in/mailgun/mailgun-go.v1"
 )
 
@@ -11,12 +11,16 @@ type Mailgun struct {
      Domain       string
 	 APIKey       string
 	 PublicAPIKey string
+	 CounterM     int
 }
 
 func (p *Mailgun) Init() (err error) {
 	 p.Domain = os.Getenv("MG_DOMAIN")
 	 p.APIKey = os.Getenv("MG_API_KEY")
 	 p.PublicAPIKey = os.Getenv("MG_PUBLIC_API_KEY")
+	 if p.Domain == "" {return errors.New("ERR_INVALID_DOMAIN")}
+	 if p.APIKey == "" {return errors.New("ERR_INVALID_APIKEY")}
+	 if p.PublicAPIKey == "" {return errors.New("ERR_INVALID_PUBAPIKEY")}
 	 return
 }
 
@@ -31,14 +35,12 @@ func (p *Mailgun) SendEmail(email MailgunEmail) (err error) {
     "Un saludo",
     "<div><h1>Hola desde mailgun<h1><h4>Template desde hermes</h4></div>",
     "mau.cdr.19@gmail.com")
-    log.Println(message,email.MailgunM)
 	
-	resp, id, err := mg.Send(email.MailgunM)
+	resp, id, err := mg.Send(message)
 	if err != nil {
-		log.Fatal(err)
-		return err
+	  return errors.New("ERR_INVALID_MESSAGE")
 	}
-	fmt.Printf("ID: %s Resp: %s\n", id, resp)
+	log.Printf("--------%+v,%+v",resp,id)
 
 	return
 }

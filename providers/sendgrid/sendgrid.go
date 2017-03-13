@@ -9,11 +9,15 @@ import (
 )
 
 type Sendgrid struct {
-	 APIKey string
+	 APIKey    string
+	 ConunterM int
 }
 
 func (p *Sendgrid) Init() (err error) {
    	p.APIKey = os.Getenv("SENDGRID_API_KEY")
+    if p.APIKey == ""{
+       return errors.New("ERR_INVALID_APIKEY")
+	}
 	return
 }
 
@@ -24,16 +28,16 @@ func (p *Sendgrid) SendEmail(email SendgridEmail) (err error) {
 	request.Method = "POST"
 	request.Body = mail.GetRequestBody(email.SendgridM)
 	response, err := sendgrid.API(request)
-	log.Println(response,err)
 	if err != nil {
-        log.Println(err)
-		return err
+		return errors.New("ERR_INVALID_MESSAGE")
     } else {
-		
+		log.Printf("response:SendEmail():",response)
         if response.StatusCode == 429 {
-             return errors.New(`error sending message`)
+             return errors.New("ERR_LIMIT_REACHED")
+		}else if response.StatusCode == 401 {
+			 return errors.New("ERR_INVALID_APIKEY")
 		}
-		  return response
+		return 
     }
 }
 

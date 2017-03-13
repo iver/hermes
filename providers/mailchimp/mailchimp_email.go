@@ -9,7 +9,7 @@ package mailchimp
 type MailchimpEmail struct{
 	ID          int64          `json:"-" db:"id,omitempty"`
 	InsertedAt  time.Time      `json:"-" db:"inserted_at,omitempty"`
-	SendedAt    time.Time      `json:"-" db:"sended_at,omitempty"`
+	SendedAt    time.Time      `json:"-" db:"sended_at,omitempty"`  
 	GochimpM    gochimp.Message`json:"-" db:"gochimp_message,omitempty"`
 }
 
@@ -65,10 +65,6 @@ func (m *MailchimpEmail) AddTemplate(t string)(err error){
 	}
 	m.GochimpM.Html= renderedTemplate
     return
-}
-
-func NewEmail() MailchimpEmail {
-	return 
 }
 
 func (m *MailchimpEmail) AddContent(t string)(err error){

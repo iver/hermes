@@ -7,6 +7,7 @@ import (
 )
 
 func TestMailchimpSendEmail(t *testing.T) {
+	var err error
 	var provider = p.Sendgrid{}
 	userEmail := os.Getenv("SENDGRID_USER")
 	senderName:= "Un amigo"
@@ -14,11 +15,13 @@ func TestMailchimpSendEmail(t *testing.T) {
 	subject:= "Un saludo"
 	template := "<div><h1>Hola desde sendgrid<h1><h4>Template desde hermes</h4></div>"
 	recipients := []string{userEmail, "mau16@ciencias.unam.mx"}
-    provider.Init()
+    if err = provider.Init(); err !=nil{
+		 t.Error("provider:Init()-", err)
+	}
     email,_:= provider.NewEmail(senderEmail,senderName,subject,template)
 	email.AddRecipients(recipients...)
-	if err := provider.SendEmail(email); err != nil {
-		t.Error("hermes: error in provider", err)
+	if err = provider.SendEmail(email); err != nil {
+		t.Error("provider:SendEmail()-", err)
 	}
 
 	return

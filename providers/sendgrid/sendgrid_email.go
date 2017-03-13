@@ -3,7 +3,6 @@ package sendgrid
  import (
 	 mail "github.com/sendgrid/sendgrid-go/helpers/mail"
 	 "time"
-	 "fmt"
  )
 
 type SendgridEmail struct{
@@ -39,7 +38,6 @@ func (m *SendgridEmail) AddRecipients(r ...string) (err error){
 	ps := mail.NewPersonalization()
     ps.AddTos(recipients...)
     m.SendgridM.AddPersonalizations(ps)
-	fmt.Printf("aaaaaaaaaa %+v",m.SendgridM.Personalizations[0].To)
 	return
 }
 

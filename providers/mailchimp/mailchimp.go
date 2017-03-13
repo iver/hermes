@@ -4,33 +4,33 @@ import (
 	"fmt"
 	"os"
 	"github.com/mattbaird/gochimp"
+	"errors"
 )
 
 type Mailchimp struct {
-	 APIKey string
+	 APIKey   string
+	 CounterM int
+	 MandrillAPI *gochimp.MandrillAPI 
 }
 
 func (p *Mailchimp) Init() (err error) {
-     p.APIKey = os.Getenv("MANDRILL_KEY")
-	  if err != nil {
-        fmt.Println("Error instantiating client")
-    }
+    p.APIKey = os.Getenv("MANDRILL_KEY")
+    p.MandrillAPI, err = gochimp.NewMandrill(p.APIKey)
+	if p.APIKey == ""{
+       return errors.New("ERR_INVALID_APIKEY")
+	}
 	return
 }
 
 
 //  sendemail function with mailchimp provider
 func (p *Mailchimp) SendEmail(email MailchimpEmail) (err error) {
-
-    mandrillAPI, err := gochimp.NewMandrill(p.APIKey)
+    response, err := p.MandrillAPI.MessageSend(email.GochimpM, false);
 	if err != nil {
-		return err
+		return errors.New("ERR_INVALID_MESSAGE")
 	}
-	if _, err = mandrillAPI.MessageSend(email.GochimpM, false); err != nil {
-		fmt.Println("Error sending message")
-		return err
-	}
-
+ 
+    fmt.Printf("%+v",response)
 	return
 }
 

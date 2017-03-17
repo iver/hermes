@@ -8,7 +8,6 @@ import (
 
 func TestMailchimpSendEmail(t *testing.T) {
 	var provider = p.Mailgun{}
-	/*userEmail := os.Getenv("MG_EMAIL_TO")*/
 	var err error
 	senderName:= "Un amigo"
 	senderEmail:= "mailgun@hermes.mx"

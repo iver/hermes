@@ -2,36 +2,54 @@ package sendgrid
 
 import (
 	"os"
-    "log"
+	"fmt"
+	"path"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"github.com/sendgrid/sendgrid-go"
+	"bitbucket.org/ivan-iver/config"
 	"errors"
 )
 
+var (
+	cfgfile    = `provider.conf`
+	sApiVersion = "/v3/mail/send"
+	sBasePath = "https://api.sendgrid.com"
+)
+
 type Sendgrid struct {
-	 APIKey    string
-	 ConunterM int
+	 ID           int64        `json:"-" db:"id"`
+     Name         string       `json:"-" db:"provider_name"`
+	 APIKey       string       `json:"-" db:"-"`
+	 ConunterM    int64        `json:"-" db:"counter_m"`
+}
+
+func NewSendgrid() *Sendgrid {
+    s := &Sendgrid{}
+    return s
+}
+
+func (p *Sendgrid) GetName() (name string) {
+	return `sendgrid`
 }
 
 func (p *Sendgrid) Init() (err error) {
-   	p.APIKey = os.Getenv("SENDGRID_API_KEY")
-    if p.APIKey == ""{
+	 c,err := Config()
+	p.Name = p.GetName()
+   	if p.APIKey,err = c.String("sendgrid", "apikey"); err !=nil{
        return errors.New("ERR_INVALID_APIKEY")
 	}
 	return
 }
 
-
 //  sendemail function with sendgrid provider
-func (p *Sendgrid) SendEmail(email SendgridEmail) (err error) {
-	request := sendgrid.GetRequest(p.APIKey, "/v3/mail/send", "https://api.sendgrid.com")
+func (p *Sendgrid) SendEmail(email Email) (err error) {
+	request := sendgrid.GetRequest(p.APIKey,sApiVersion,sBasePath)
 	request.Method = "POST"
 	request.Body = mail.GetRequestBody(email.SendgridM)
 	response, err := sendgrid.API(request)
 	if err != nil {
 		return errors.New("ERR_INVALID_MESSAGE")
     } else {
-		log.Printf("response:SendEmail():",response)
         if response.StatusCode == 429 {
              return errors.New("ERR_LIMIT_REACHED")
 		}else if response.StatusCode == 401 {
@@ -41,11 +59,25 @@ func (p *Sendgrid) SendEmail(email SendgridEmail) (err error) {
     }
 }
 
-func (p *Sendgrid) NewEmail(se string , sn string , s string ,t string) (m SendgridEmail,err error) {
+func (p *Sendgrid) NewEmail(se string , sn string , s string ,t string) (m Email,err error) {
 	 m=NewEmail()
 	 m.AddSubject(s)
 	 m.AddSenderEmail(se)
 	 m.AddContent(t)
 	 m.AddSenderName(sn)
      return 
+}
+
+func Config() (cfg *config.Config,err error){ 
+	var pwd string
+  	if pwd, err = os.Getwd(); err != nil {
+		fmt.Errorf("| Error | %v \n", err)
+		panic(err)
+	}
+    pwd = path.Join(pwd, cfgfile)
+	if cfg, err = config.ReadDefault(pwd); err != nil {
+		fmt.Errorf("| Error | %v \n", err)
+		panic(err)
+	}
+	return
 }

@@ -6,7 +6,7 @@ package mailgun
 	 //"strings"
  )
 
-type MailgunEmail struct{
+type Email struct{
 	ID          *int64            `json:"-" db:"-,omitempty"`
 	senderName  *string           `json:"-" db:"-,omitempty"`
 	senderEmail *string           `json:"-" db:"-,omitempty"`
@@ -20,42 +20,42 @@ type MailgunEmail struct{
 }
 
 
-func (m *MailgunEmail) AddSenderEmail(e string) (err error){
+func (m *Email) AddSenderEmail(e string) (err error){
    m.senderEmail=&e	
    return
 }
 
-func (m *MailgunEmail) AddSenderName(n string) (err error){
+func (m *Email) AddSenderName(n string) (err error){
     m.senderName=&n	
    return
 }
 
-func (m *MailgunEmail) AddSubject(s string) (err error){
+func (m *Email) AddSubject(s string) (err error){
     m.subject=&s
    return
 }
 
-func (m *MailgunEmail) AddRecipients(r ...string) (err error){
+func (m *Email) AddRecipients(r ...string) (err error){
     /*recipients:="mau.cdr.19@gmail.com"
 	m.MailgunM.AddRecipient(recipients)*/
 	return
 }
 
-func (m *MailgunEmail) AddAttachment(a string) (err error){
+func (m *Email) AddAttachment(a string) (err error){
   return
 }
 
-func (m *MailgunEmail) AddTemplate(t string)(err error){
+func (m *Email) AddTemplate(t string)(err error){
     m.template=&t
 	return
 }
 
-func (m *MailgunEmail) AddContent(t string)(err error){
+func (m *Email) AddContent(t string)(err error){
 	m.content=&t
     return 
 }
 
-func (m *MailgunEmail) SetValues()(err error){
+func (m *Email) SetValues()(err error){
 	message1 := mailgun.NewMessage(
 		*m.senderEmail,
 		*m.subject,

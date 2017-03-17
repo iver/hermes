@@ -1,7 +1,6 @@
 package providers_test
 
 import (
-	//"os"
 	"testing"
 	p "github.com/ivan-iver/hermes/providers/mailgun"
 )

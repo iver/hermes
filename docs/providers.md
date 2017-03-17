@@ -252,14 +252,3 @@ Frameworks para el envio de email en Go
 2. Cambiar para usar mailgun y continuar enviando 
 3. Enviar los mails a travéz de mailgun hasta tener un error 402
 4. Cambiar para usar sendgrid y continuar enviando   hasta obtener un error 429
-
-
-
-
-
-
-
-
-
-
-

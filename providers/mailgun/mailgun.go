@@ -22,7 +22,7 @@ type Mailgun struct {
 	 CounterM     int64        `json:"-" db:"counter"`
 }
 
-func NewMailgun() *Mailgun {
+func NewProvider() *Mailgun {
     s := &Mailgun{}
     return s
 }

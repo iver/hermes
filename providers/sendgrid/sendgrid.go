@@ -23,7 +23,7 @@ type Sendgrid struct {
 	 ConunterM    int64        `json:"-" db:"counter_m"`
 }
 
-func NewSendgrid() *Sendgrid {
+func NewProvider() *Sendgrid {
     s := &Sendgrid{}
     return s
 }

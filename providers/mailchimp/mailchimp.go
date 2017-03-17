@@ -33,7 +33,7 @@ type Mailchimp struct {
 	 MandrillAPI  *gochimp.MandrillAPI
 }
 
-func NewMailchimp() *Mailchimp {
+func NewProvider() *Mailchimp {
     s := &Mailchimp{}
     return s
 }
@@ -82,12 +82,12 @@ func Config() (cfg *config.Config,err error){
 	return
 }
 
-func (p *Mailchimp) NewEmail(se string , sn string , s string ,t string) (mm Email,err error) {
-	 var m =MEmail{}
-	 m.AddSenderEmail(se)
-	 m.AddSenderName(sn)
-	 m.AddSubject(s)
-	 m.AddTemplate(t)
-	 mm= &m
+func (p *Mailchimp) NewEmail(se string , sn string , s string ,t string) (m Email,err error) {
+	 var mm =MEmail{}
+	 mm.AddSenderEmail(se)
+	 mm.AddSenderName(sn)
+	 mm.AddSubject(s)
+	 mm.AddTemplate(t)
+	 m= &mm
      return 
 }

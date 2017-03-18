@@ -50,8 +50,8 @@ func (p *Mailgun) Init() (err error) {
 
 // send email method with mailgun provider
 
-func (p *Mailgun) SendEmail(email Email) (err error) {
-
+func (p *Mailgun) SendEmail(emailI interface{}) (err error) {
+    //email:=emailI.(Email)
 	mg := mailgun.NewMailgun(p.Domain, p.APIKey, p.PublicAPIKey)
 	
 	message := mailgun.NewMessage(
@@ -81,12 +81,14 @@ func Config() (cfg *config.Config,err error){
 	return
 }
 
-func (p *Mailgun) NewEmail(se string , sn string , s string ,t string) (m Email,err error) {
+func (p *Mailgun) NewEmail(se string , sn string , s string ,t string) (ms interface{} ,err error) {
+     var m =Email{}
 	 m.AddSubject(s)
 	 m.AddSenderEmail(se)
 	 m.AddContent(t)
 	 m.AddSenderName(sn)
 	 m.SetValues()
+	 ms= &m
      return 
 
 }

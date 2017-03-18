@@ -42,7 +42,8 @@ func (p *Sendgrid) Init() (err error) {
 }
 
 //  sendemail function with sendgrid provider
-func (p *Sendgrid) SendEmail(email Email) (err error) {
+func (p *Sendgrid) SendEmail(emailI interface{}) (err error) {
+	email:=emailI.(*Email)
 	request := sendgrid.GetRequest(p.APIKey,sApiVersion,sBasePath)
 	request.Method = "POST"
 	request.Body = mail.GetRequestBody(email.SendgridM)
@@ -59,12 +60,14 @@ func (p *Sendgrid) SendEmail(email Email) (err error) {
     }
 }
 
-func (p *Sendgrid) NewEmail(se string , sn string , s string ,t string) (m Email,err error) {
+func (p *Sendgrid) NewEmail(se string , sn string , s string ,t string) (ms interface{},err error) {
+	 var m =Email{}
 	 m=NewEmail()
 	 m.AddSubject(s)
 	 m.AddSenderEmail(se)
 	 m.AddContent(t)
 	 m.AddSenderName(sn)
+	 ms =&m
      return 
 }
 

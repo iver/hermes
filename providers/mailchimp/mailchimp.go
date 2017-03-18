@@ -13,17 +13,6 @@ var (
 	cfgfile   = `provider.conf`
 )
 
-// Email interface
-type Email interface {
-   AddSenderEmail(e string) error
-   AddSubject(s string) error
-   AddSenderName(name string) error
-   AddRecipients(e ...string) error
-   AddAttachment(p string) error
-   AddTemplate(t string) error
-   AddContent(c string) error
-}
-
 
 type Mailchimp struct {
 	 ID           int64
@@ -57,9 +46,9 @@ func (p *Mailchimp) Init() (err error) {
 
 	
 //  sendemail function with mailchimp provider
-func (p *Mailchimp) SendEmail(email Email) (err error) {
-	var emailg = email.(*MEmail)
-    response, err := p.MandrillAPI.MessageSend(emailg.GochimpM, false);
+func (p *Mailchimp) SendEmail(emailI interface{}) (err error) {
+	email:=emailI.(*Email)
+    response, err := p.MandrillAPI.MessageSend(email.GochimpM, false);
 	if err != nil {
 		return errors.New("ERR_INVALID_MESSAGE")
 	}
@@ -82,8 +71,8 @@ func Config() (cfg *config.Config,err error){
 	return
 }
 
-func (p *Mailchimp) NewEmail(se string , sn string , s string ,t string) (m Email,err error) {
-	 var mm =MEmail{}
+func (p *Mailchimp) NewEmail(se string , sn string , s string ,t string) (m interface{},err error) {
+	 var mm =Email{}
 	 mm.AddSenderEmail(se)
 	 mm.AddSenderName(sn)
 	 mm.AddSubject(s)

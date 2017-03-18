@@ -1,26 +1,26 @@
 package providers_test
 
 import (
-	"os"
 	"testing"
-	p "github.com/ivan-iver/hermes/providers/sendgrid"
+	"github.com/ivan-iver/hermes/providers/sendgrid"
 )
 
 func TestMailchimpSendEmail(t *testing.T) {
 	var err error
-	var provider = p.Sendgrid{}
-	userEmail := os.Getenv("SENDGRID_USER")
+	var provider = sendgrid.Sendgrid{}
+	var emailM *sendgrid.Email
 	senderName:= "Un amigo"
 	senderEmail:= "sendgrid@hermes.mx"
 	subject:= "Un saludo"
 	template := "<div><h1>Hola desde sendgrid<h1><h4>Template desde hermes</h4></div>"
-	recipients := []string{userEmail, "mau16@ciencias.unam.mx"}
+	recipients := []string{"mau.cdr.19@gmail.com", "mau16@ciencias.unam.mx"}
     if err = provider.Init(); err !=nil{
 		 t.Error("provider:Init()-", err)
 	}
-    email,_:= provider.NewEmail(senderEmail,senderName,subject,template)
-	email.AddRecipients(recipients...)
-	if err = provider.SendEmail(email); err != nil {
+    email,err:= provider.NewEmail(senderEmail,senderName,subject,template)
+	emailM=email.(*sendgrid.Email)
+	emailM.AddRecipients(recipients...)
+	if err = provider.SendEmail(emailM); err != nil {
 		t.Error("provider:SendEmail()-", err)
 	}
 

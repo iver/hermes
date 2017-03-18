@@ -1,5 +1,4 @@
-package models
-
+package lib
 
 // Email interface
 type Email interface {

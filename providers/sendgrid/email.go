@@ -58,8 +58,47 @@ func NewEmail() Email {
 	return m 
 }
 
-func (m *Email) AddContent(t string)(err error){
-	content := mail.NewContent("text/plain", t)
-	m.SendgridM.AddContent(content)
+func (m *Email) AddContent(c interface{})(err error){
+	content:=c.(Content)
+	contentM := mail.NewContent("text/plain", content.Body)
+	m.SendgridM.AddContent(contentM)
     return 
+}
+
+type Attachment struct{
+     Path string
+	 Type string
+}
+
+func (m *Attachment) SetPath(t string)(err error){
+   return             
+}
+
+type Content struct{
+   Title         string
+   Body          string
+   RecipientName string
+}
+
+func (m *Content) SetBody(b string)(err error){
+   m.Body = b
+   return 
+}
+func (m *Content) SetTitle(t string)(err error){
+   m.Title = t
+   return 
+}
+
+func (m *Content) SetRecipientName(n string)(err error){
+   m.RecipientName = n
+   return 
+}
+
+type Template struct{
+    ID    int64
+	Name  string
+}
+
+func (m *Template) AddContent(t string)(err error){
+   return 
 }

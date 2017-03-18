@@ -8,29 +8,29 @@ package mailchimp
 	 "bitbucket.org/ivan-iver/config"
  ) 
 
-type MEmail struct{
+type Email struct{
 	ID          int64          `json:"-" db:"id,omitempty"`
 	InsertedAt  time.Time      `json:"-" db:"inserted_at,omitempty"`
 	SendedAt    time.Time      `json:"-" db:"sended_at,omitempty"`  
 	GochimpM    gochimp.Message`json:"-" db:"gochimp_message,omitempty"`
 }
 
-func (m *MEmail) AddSenderEmail(e string) (err error){
+func (m *Email) AddSenderEmail(e string) (err error){
    m.GochimpM.FromEmail=e
    return
 }
 
-func (m *MEmail) AddSenderName(n string) (err error){
+func (m *Email) AddSenderName(n string) (err error){
    m.GochimpM.FromName= n
    return
 }
 
-func (m *MEmail) AddSubject(s string) (err error){
+func (m *Email) AddSubject(s string) (err error){
    m.GochimpM.Subject = s
    return
 }
 
-func (m *MEmail) AddRecipients(r ...string) (err error){
+func (m *Email) AddRecipients(r ...string) (err error){
   recipients := []gochimp.Recipient{}
   for _, email := range r {
 		recipients = append(recipients, gochimp.Recipient{Email: email})
@@ -39,11 +39,11 @@ func (m *MEmail) AddRecipients(r ...string) (err error){
   return
 }
 
-func (m *MEmail) AddAttachment(a string) (err error){
+func (m *Email) AddAttachment(a string) (err error){
   return
 }
 
-func (m *MEmail) AddTemplate(t string)(err error){
+func (m *Email) AddTemplate(t string)(err error){
 	c,err := NewConfig()
     apiKey,err := c.String("mailchimp", "apikey") 
     if err!=nil{
@@ -70,7 +70,7 @@ func (m *MEmail) AddTemplate(t string)(err error){
     return
 }
 
-func (m *MEmail) AddContent(t string)(err error){
+func (m *Email) AddContent(t string)(err error){
     return 
 }
 
@@ -87,4 +87,32 @@ func NewConfig() (cfg *config.Config,err error){
 		panic(err)
 	}
 	return
+}
+
+type Attachment struct{
+     Path string
+	 Type string
+}
+
+func (m *Attachment) SetPath(t string)(err error){
+   return             
+}
+
+type Content struct{
+   Title         string
+   Body          string
+   RecipientName string
+}
+
+func (m *Content) AddContent(t string)(err error){
+   return 
+}
+
+type Template struct{
+    ID    int64
+	Name  string
+}
+
+func (m *Template) AddContent(t string)(err error){
+   return 
 }

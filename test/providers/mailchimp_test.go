@@ -2,12 +2,13 @@ package providers_test
 
 import (
 	"testing"
-	p "github.com/ivan-iver/hermes/providers/mailchimp"
+    "github.com/ivan-iver/hermes/providers/mailchimp"
 )
 
 func TestMailchimpSendEmail(t *testing.T) {
 	var err error
-	var provider = p.Mailchimp{}
+	var provider = mailchimp.Mailchimp{} 
+	var emailM *mailchimp.Email
 	senderName:= "Un amigo"
 	senderEmail:= "mailchimp@hermes.mx"
 	subject:= "Un saludo"
@@ -16,9 +17,10 @@ func TestMailchimpSendEmail(t *testing.T) {
     if err=provider.Init(); err != nil{
        t.Error("provider:Init()", err)
 	}
-    email,_:= provider.NewEmail(senderEmail,senderName,subject,content)
-	email.AddRecipients(recipients...)
-	if err := provider.SendEmail(email); err != nil {
+    email,err := provider.NewEmail(senderEmail,senderName,subject,content)
+    emailM = email.(*mailchimp.Email)
+	emailM.AddRecipients(recipients...)
+	if err := provider.SendEmail(emailM); err != nil {
 	   t.Error("provider:SendEmail()-", err)
 	}
 	return

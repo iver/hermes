@@ -1,21 +1,46 @@
-package dd
+package providers_test
 
 import (
     "log"
 	"testing"
     "github.com/ivan-iver/hermes/providers"
-	"github.com/ivan-iver/hermes/models"
+	"github.com/ivan-iver/hermes/lib"
     )  
 
-func TestCreateProvider(t *testing.T) {
-	var options = []string{"mailchimp"}
-    var err error
-	var providerI interface{}
-	if providerI,err = providers.NewProvider(options); err != nil {
-		t.Error("providers:NewProvider()", err)
+func TestCreateProviders(t *testing.T) {
+	var err error
+	var options1 = []string{"mailchimp"}
+	var options2 = []string{"sendgrid"}
+	var options3 = []string{"mailgun"}
+    var providerI interface{}
+	
+	if providerI,err = providers.NewProvider(options1); err != nil {
+		t.Error("CreateProviders:NewProvider()", err)
 	}
-	provider:=providerI.(models.Provider)
-    log.Printf("Provider name:%+v",provider)
+	mailchimp:=providerI.(lib.Provider)
+
+    if name:=mailchimp.GetName(); name!= "mailchimp" {
+		log.Printf("ProvderName:%v",name)
+		t.Error("GetName:Diferent to mailchimp", err)
+	}
+	if providerI,err = providers.NewProvider(options2); err != nil {
+		t.Error("CreateProviders:NewProvider()", err)
+	}
+	sendgrid:=providerI.(lib.Provider)
+
+    if name :=sendgrid.GetName(); name != "sendgrid" {
+		log.Printf("ProvderName:%v",name)
+		t.Error("GetName:Diferent to sendgrid", err)
+	}
+	if providerI,err = providers.NewProvider(options3); err != nil {
+		t.Error("CreateProviders:NewProvider()", err)
+	}
+	mailgun:=providerI.(lib.Provider)
+
+    if name:=mailgun.GetName(); name != "mailgun" {
+		log.Printf("ProvderName:%v",name)
+		t.Error("GetName:Diferent to mailgun", err)
+	}
 	return
 
 }

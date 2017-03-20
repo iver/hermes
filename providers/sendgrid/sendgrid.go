@@ -85,3 +85,6 @@ func Config() (cfg *config.Config,err error){
 	return
 }
 
+func (p *Sendgrid) ToString() string{
+	 return "Name:"+p.Name+"-APIKey:"+p.APIKey
+}

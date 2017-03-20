@@ -80,3 +80,7 @@ func (p *Mailchimp) NewEmail(se string , sn string , s string ,t string) (m inte
 	 m= &mm
      return 
 }
+
+func (p *Mailchimp) ToString() string{
+	 return "Name:"+p.Name+"-APIKey:"+p.APIKey
+}

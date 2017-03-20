@@ -4,6 +4,7 @@ import (
 	"container/ring"
 	"github.com/ivan-iver/hermes/lib"
 	"github.com/ivan-iver/hermes/providers"
+	"errors"
 )
 
 var (
@@ -15,17 +16,21 @@ type EmailProvider struct {
 }
 
 func New() (e EmailProvider, err error) {
+	var invalidProviders = 0
 	e = EmailProvider{}
-
 	e.Providers = ring.New(len(DefaultOrder))
 	for i := 0; i < e.Providers.Len(); i++ {
 		if p, err := providers.NewProvider([]string{DefaultOrder[i]}); err == nil {
 			e.Providers.Value = p.(lib.Provider)
 			e.Providers = e.Providers.Next()
+		}else{
+           invalidProviders++
 		}
-
 	}
-	return
+	if invalidProviders == len(DefaultOrder){
+		err = errors.New("ERR_INVALID_PROVIDERS")
+	}
+	return	
 }
 
 func (e *EmailProvider) NextProvider() {
@@ -46,12 +51,21 @@ func (e *EmailProvider) Sort(order ...string) (err error) {
 }
 
 func (e *EmailProvider) Send(m *lib.Email) (err error) {
-	provider := e.Providers.Value.(lib.Provider)
-	if err = provider.SendEmail(m); err != nil {
-		 if err.Error()== "ERR_LIMIT_REACHED"{
-        e.Providers = e.Providers.Next()
-				//TODO add validation with all providers
+	var emailSended = false
+	head := e.Providers.Value.(lib.Provider)	
+	for !emailSended {
+	   provider := e.Providers.Value.(lib.Provider)	
+       if err = provider.SendEmail(m); err != nil {
+		 if err.Error() == "ERR_LIMIT_REACHED"{
+            e.Providers = e.Providers.Next()
+			current := e.Providers.Value.(lib.Provider)
+			if providers.Equals(head,current){
+				return errors.New("ERR_ALL_LIMITS_REACHED")
+			}
 		 }
+	   }else{
+		  emailSended=true 
+	   }
 	}
 	return
 }
@@ -64,7 +78,7 @@ func (e *EmailProvider) SelectedProvider() (pn string) {
 
 func (e *EmailProvider) NewEmail(d string, sn string, s string, t string, r ...string) (email lib.Email,err error) {
 	provider := e.Providers.Value.(lib.Provider)
-  emailI,err := provider.NewEmail(d,sn,s,t)
+    emailI,err := provider.NewEmail(d,sn,s,t)
 	email = emailI.(lib.Email)
 	email.AddRecipients(r...)
 	return

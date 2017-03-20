@@ -94,4 +94,7 @@ func (p *Mailgun) NewEmail(se string , sn string , s string ,t string) (ms inter
 }
 
 
+func (p *Mailgun) ToString() string{
+	 return "Name:"+p.Name+"-APIKey:"+p.APIKey
+}
 

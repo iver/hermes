@@ -1,50 +1,71 @@
 package hermes
 
 import (
-	"github.com/ivan-iver/hermes/providers"
+	"container/ring"
 	"github.com/ivan-iver/hermes/lib"
+	"github.com/ivan-iver/hermes/providers"
 )
 
 var (
-	 DefaultOrder = []string{ "mailchimp", "mailgun", "sendgrid"}
+	DefaultOrder = []string{"mailchimp", "mailgun", "sendgrid"}
 )
+
 type EmailProvider struct {
-	 Providers map[string]lib.Provider
-	 OrderProviders []string
-	 ActualProvider string
+	Providers *ring.Ring
 }
 
-func New() (e EmailProvider,err error){
-    e = EmailProvider{}
-	  e.Providers = map[string]lib.Provider{ "mailchimp": nil,
-                   					   "mailgun"  : nil,
-                    				   "sendgrid" : nil,
-    }
-		e.OrderProviders = DefaultOrder
-    e.ActualProvider=e.OrderProviders[0]
-	  for key, _ := range e.Providers {
-		   if p,err:= providers.NewProvider([]string{key}); err==nil {
-              e.Providers[key] = p.(lib.Provider)
-		   }
-    }
-	return 
+func New() (e EmailProvider, err error) {
+	e = EmailProvider{}
+
+	e.Providers = ring.New(len(DefaultOrder))
+	for i := 0; i < e.Providers.Len(); i++ {
+		if p, err := providers.NewProvider([]string{DefaultOrder[i]}); err == nil {
+			e.Providers.Value = p.(lib.Provider)
+			e.Providers = e.Providers.Next()
+		}
+
+	}
+	return
 }
 
-
-func (e *EmailProvider)Sort(order ...string) (err error){
-  e.OrderProviders=order
-  return 
+func (e *EmailProvider) NextProvider() {
+	e.Providers = e.Providers.Next()
 }
 
-func (e *EmailProvider) Send(m *lib.Email)(err error){
-  return
+func (e *EmailProvider) Sort(order ...string) (err error) {
+	 newOrder := ring.New(len(order))
+
+	 for i := 0; i < newOrder.Len(); i++ {
+		if p, err := providers.NewProvider([]string{order[i]}); err == nil {
+			e.Providers.Value = p.(lib.Provider)
+			e.Providers = e.Providers.Next()
+		}
+
+	}
+	return
 }
 
-func (e *EmailProvider) SelectedProvider()(pn string){
-	pn= e.Providers[e.ActualProvider].GetName()
-  return
+func (e *EmailProvider) Send(m *lib.Email) (err error) {
+	provider := e.Providers.Value.(lib.Provider)
+	if err = provider.SendEmail(m); err != nil {
+		 if err.Error()== "ERR_LIMIT_REACHED"{
+        e.Providers = e.Providers.Next()
+				//TODO add validation with all providers
+		 }
+	}
+	return
 }
 
-func (p *EmailProvider) NewEmail(e string , sn string , s string ,t string,r ...string) (err error){
-  return
+func (e *EmailProvider) SelectedProvider() (pn string) {
+	provider := e.Providers.Value.(lib.Provider)
+	pn = provider.GetName()
+	return
+}
+
+func (e *EmailProvider) NewEmail(d string, sn string, s string, t string, r ...string) (email lib.Email,err error) {
+	provider := e.Providers.Value.(lib.Provider)
+  emailI,err := provider.NewEmail(d,sn,s,t)
+	email = emailI.(lib.Email)
+	email.AddRecipients(r...)
+	return
 }

@@ -46,14 +46,12 @@ func (p *Mailchimp) Init() (err error) {
 
 	
 //  sendemail function with mailchimp provider
-func (p *Mailchimp) SendEmail(emailI interface{}) (err error) {
-	email:=emailI.(*Email)
-    response, err := p.MandrillAPI.MessageSend(email.GochimpM, false);
+func (p *Mailchimp) SendEmail(emailI interface{}) (err error) {	
+	email := *emailI.(*Email)
+    _, err = p.MandrillAPI.MessageSend(email.GochimpM, false);
 	if err != nil {
 		return errors.New("ERR_INVALID_MESSAGE")
 	}
- 
-    fmt.Printf("%+v",response)
 	return
 }
 

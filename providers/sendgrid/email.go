@@ -58,9 +58,9 @@ func NewEmail() Email {
 	return m 
 }
 
-func (m *Email) AddContent(c interface{})(err error){
-	content:=c.(Content)
-	contentM := mail.NewContent("text/plain", content.Body)
+func (m *Email) AddContent(c string)(err error){
+	//content:=c.(Content)
+	contentM := mail.NewContent("text/plain",c)
 	m.SendgridM.AddContent(contentM)
     return 
 }

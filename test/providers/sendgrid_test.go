@@ -5,7 +5,7 @@ import (
 	"github.com/ivan-iver/hermes/providers/sendgrid"
 )
 
-func TestMailchimpSendEmail(t *testing.T) {
+func TestSendgridSendEmail(t *testing.T) {
 	var err error
 	var provider = sendgrid.Sendgrid{}
 	var emailM *sendgrid.Email

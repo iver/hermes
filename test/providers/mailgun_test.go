@@ -5,7 +5,7 @@ import (
 	"github.com/ivan-iver/hermes/providers/mailgun"
 )
 
-func TestMailchimpSendEmail(t *testing.T) {
+func TestMailgunSendEmail(t *testing.T) {
 	var err error
 	var provider = mailgun.Mailgun{}
 	var emailM *mailgun.Email

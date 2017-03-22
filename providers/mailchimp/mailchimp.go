@@ -1,11 +1,8 @@
 package mailchimp
 
 import (
-	"os"
-	"path"
-	"fmt"
 	"github.com/mattbaird/gochimp"
-	"bitbucket.org/ivan-iver/config"
+	"github.com/mauricio-cdr/config"
 	"errors"
 )
 
@@ -32,12 +29,12 @@ func (p *Mailchimp) GetName() (name string) {
 }
 
 func (p *Mailchimp) Init() (err error) {
-    c,err := Config()
-    p.APIKey,err = c.String("mailchimp", "apikey") 
+    c,err := config.NewConfig(cfgfile)
+	p.Name = p.GetName()
+    p.APIKey,err = c.Property(p.Name, "apikey") 
     if err!=nil{
        return errors.New("ERR_INVALID_APIKEY")
 	}
-	p.Name = p.GetName()
     if p.MandrillAPI, err = gochimp.NewMandrill(p.APIKey); err!=nil{
        return errors.New("ERR_INVALID_APIKEY")
 	}
@@ -55,19 +52,6 @@ func (p *Mailchimp) SendEmail(emailI interface{}) (err error) {
 	return
 }
 
-func Config() (cfg *config.Config,err error){ 
-	var pwd string
-  	if pwd, err = os.Getwd(); err != nil {
-		fmt.Errorf("| Error | %v \n", err)
-		panic(err)
-	}
-    pwd = path.Join(pwd, cfgfile)
-	if cfg, err = config.ReadDefault(pwd); err != nil {
-		fmt.Errorf("| Error | %v \n", err)
-		panic(err)
-	}
-	return
-}
 
 func (p *Mailchimp) NewEmail(se string , sn string , s string ,t string) (m interface{},err error) {
 	 var mm =Email{}

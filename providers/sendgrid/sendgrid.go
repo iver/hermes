@@ -1,12 +1,9 @@
 package sendgrid
 
 import (
-	"os"
-	"fmt"
-	"path"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"github.com/sendgrid/sendgrid-go"
-	"bitbucket.org/ivan-iver/config"
+	"github.com/mauricio-cdr/config"
 	"errors"
 )
 
@@ -33,9 +30,9 @@ func (p *Sendgrid) GetName() (name string) {
 }
 
 func (p *Sendgrid) Init() (err error) {
-	 c,err := Config()
+	c,err := config.NewConfig(cfgfile)
 	p.Name = p.GetName()
-   	if p.APIKey,err = c.String("sendgrid", "apikey"); err !=nil{
+   	if p.APIKey,err = c.Property(p.Name, "apikey"); err !=nil{
        return errors.New("ERR_INVALID_APIKEY")
 	}
 	return
@@ -69,20 +66,6 @@ func (p *Sendgrid) NewEmail(se string , sn string , s string ,t string) (ms inte
 	 m.AddSenderName(sn)
 	 ms =&m
      return 
-}
-
-func Config() (cfg *config.Config,err error){ 
-	var pwd string
-  	if pwd, err = os.Getwd(); err != nil {
-		fmt.Errorf("| Error | %v \n", err)
-		panic(err)
-	}
-    pwd = path.Join(pwd, cfgfile)
-	if cfg, err = config.ReadDefault(pwd); err != nil {
-		fmt.Errorf("| Error | %v \n", err)
-		panic(err)
-	}
-	return
 }
 
 func (p *Sendgrid) ToString() string{

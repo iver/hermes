@@ -1,12 +1,9 @@
 package mailgun
 
 import (
-	"os"
-	"fmt"
-	"path"
 	"errors"
 	"gopkg.in/mailgun/mailgun-go.v1"
-	"bitbucket.org/ivan-iver/config"
+	"github.com/mauricio-cdr/config"
 )
 
 var (
@@ -33,17 +30,18 @@ func (p *Mailgun) GetName() (name string) {
 
 
 func (p *Mailgun) Init() (err error) {
-	 c,err := Config()
+	 c,err := config.NewConfig(cfgfile)
 	 p.Name = p.GetName()
-	 if p.PublicAPIKey,err = c.String("mailgun", "publicapikey");err!=nil{
+	 if p.PublicAPIKey,err = c.Property(p.Name, "publicapikey");err!=nil{
 		return errors.New("ERR_INVALID_PUBAPIKEY")
 	 }
-	 if p.APIKey,err = c.String("mailgun", "apikey");err!=nil{
+	 if p.APIKey,err = c.Property(p.Name, "apikey");err!=nil{
 		return errors.New("ERR_INVALID_APIKEY")
 	 }
-	 //if p.Domain,err = c.String("mailgun", "domain");err!=nil{
-		p.Domain="sandboxeceaa78856bd40e1bee2496e06f723b0.mailgun.org"
-	 //}
+	 if p.Domain,err = c.Property(p.Name, "domain");err!=nil{
+		//p.Domain="sandboxeceaa78856bd40e1bee2496e06f723b0.mailgun.org"
+		return errors.New("ERR_INVALID_APIKEY")
+	 }
 	 
 	 return
 }
@@ -63,20 +61,6 @@ func (p *Mailgun) SendEmail(emailI interface{}) (err error) {
 	_, _, err = mg.Send(message)
 	if err != nil {
 	  return errors.New("ERR_INVALID_MESSAGE")
-	}
-	return
-}
-
-func Config() (cfg *config.Config,err error){ 
-	var pwd string
-  	if pwd, err = os.Getwd(); err != nil {
-		fmt.Errorf("| Error | %v \n", err)
-		panic(err)
-	}
-    pwd = path.Join(pwd, cfgfile)
-	if cfg, err = config.ReadDefault(pwd); err != nil {
-		fmt.Errorf("| Error | %v \n", err)
-		panic(err)
 	}
 	return
 }

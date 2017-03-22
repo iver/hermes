@@ -1,9 +1,8 @@
 package mailgun
 
  import (
-	 "gopkg.in/mailgun/mailgun-go.v1"
 	 "time"
-	 //"strings"
+	 "gopkg.in/mailgun/mailgun-go.v1"
  )
 
 type Email struct{

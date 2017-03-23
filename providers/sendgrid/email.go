@@ -1,23 +1,24 @@
 package sendgrid
 
 import (
-	"time"
     "fmt"
+	"time"
+	"github.com/ivan-iver/hermes/models"
 	mail "github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
 type Email struct {
-	ID          int64          `json:"id,omitempty"`
-	Sender      *Sender        `json:"sender,omitempty"`
-	Content     []*Content     `json:"content,omitempty"`
-	Attachments []*Attachment  `json:"attachments,omitempty"`
-	CreatedAt   *time.Time     `json:"created_at,omitempty"`
-	SendedAt    *time.Time     `json:"sended_at,omitempty"`
-	SendgridM   *mail.SGMailV3 `json:"id,omitempty"`
+	ID          int64                `json:"id,omitempty"`
+	Sender      *models.Sender       `json:"sender,omitempty"`
+	Content     []*models.Content    `json:"content,omitempty"`
+	Attachments []*models.Attachment `json:"attachments,omitempty"`
+	CreatedAt   *time.Time           `json:"created_at,omitempty"`
+	SendedAt    *time.Time           `json:"sended_at,omitempty"`
+	SendgridM   *mail.SGMailV3       `json:"id,omitempty"`
 }
 
 func (m *Email) AddSender(s interface{}) (err error) {
-	sender:=s.(Sender)
+	sender:=s.(models.Sender)
 	m.SendgridM.From.Name = sender.Name
 	m.SendgridM.From.Address = sender.Email
 	return
@@ -30,7 +31,7 @@ func (m *Email) AddSubject(s string) (err error) {
 }
 
 func (m *Email) AddRecipients(r interface{}) (err error) {
-	allrecipient:=r.(Recipients)
+	allrecipient:=r.(models.Recipients)
 	
 	recipients := []*mail.Email{}
 
@@ -45,13 +46,13 @@ func (m *Email) AddRecipients(r interface{}) (err error) {
 }
 
 func (m *Email) AddAttachment(a interface{}) (err error) {
-	attachment:=a.(Attachment)
+	attachment:=a.(models.Attachment)
 	fmt.Println(attachment)
 	return
 }
 
 func (m *Email) AddTemplate(t interface{}) (err error) {
-	template:=t.(Template)
+	template:=t.(models.Template)
 	fmt.Println(template)
 	return
 }
@@ -65,7 +66,7 @@ func NewEmail() Email {
 }
 
 func (m *Email) AddContent(c interface{}) (err error) {
-	content:=c.(Content)
+	content:=c.(models.Content)
 	contentM := mail.NewContent("text/plain", content.Value)
 	m.SendgridM.AddContent(contentM)
 	return

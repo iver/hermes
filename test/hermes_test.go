@@ -26,7 +26,7 @@ func TestCreateHermesOK(t *testing.T) {
 func TestSendEmailOK(t *testing.T) {
     var err error
 	iEmail:= CorrectEmail()
-    email,err:=emailProvider.NewEmail(iEmail.SenderEmail,iEmail.SenderName,iEmail.Subject,iEmail.Content,iEmail.Recipients...); 
+    email,err:=emailProvider.NewEmail(iEmail.Sender,iEmail.Subject,iEmail.Content,iEmail.Recipients); 
 	if err!=nil{
        t.Error("hermes:NewEmail()", err)
 	} 

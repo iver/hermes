@@ -1,21 +1,23 @@
 package hermes_test
 
+import (
+   	 "github.com/ivan-iver/hermes/models"
+)
 
 type Email struct{
-   	SenderEmail  string
-	SenderName   string
+	Sender       models.Sender
 	Subject      string
-	Content      string
-	Recipients   []string
+	Content      models.Content
+	Recipients   models.Recipients
 }
 
 //Peticiónn para registro de usuario 
 func CorrectEmail() (e *Email) {
 	e = &Email{
-		SenderEmail: "hermes@hermes.com",
-		SenderName: "A friend",
+		Sender:models.Sender{Name:"A friend",Email:"hermes@hermes.com"},
+		Content:models.Content{Value:"Hello.......!"},
 		Subject: "Test with hermes",
-		Recipients:[]string{"mau.cdr.19@gmail.com","mau_dsx2@hotmail.com"},
+		Recipients:models.Recipients{To:[]string{"mau.cdr.19@gmail.com","mau_dsx2@hotmail.com"}},
 	}
 	return
 }

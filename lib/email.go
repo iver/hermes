@@ -2,11 +2,10 @@ package lib
 
 // Email interface
 type Email interface {
-   AddSenderEmail(e string) error
+   AddSender(s interface{}) error
    AddSubject(s string) error
-   AddSenderName(name string) error
-   AddRecipients(e ...string) error
-   AddAttachment(p string) error
-   AddTemplate(t string) error
-   AddContent(c string) error
+   AddRecipients(r interface{}) error
+   AddAttachment(a interface{}) error
+   AddTemplate(t interface{}) error
+   AddContent(c interface{}) error
 }

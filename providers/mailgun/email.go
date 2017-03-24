@@ -1,65 +1,68 @@
 package mailgun
 
- import (
-	 "time"
-	 "gopkg.in/mailgun/mailgun-go.v1"
- )
+import (
+	"fmt"
+	"time"
+	"strings"
+	"gopkg.in/mailgun/mailgun-go.v1"
+	"github.com/ivan-iver/hermes/models"
+)
 
-type Email struct{
-	ID          *int64            `json:"-" db:"-,omitempty"`
-	senderName  *string           `json:"-" db:"-,omitempty"`
-	senderEmail *string           `json:"-" db:"-,omitempty"`
-	subject     *string           `json:"-" db:"-,omitempty"`
-    attachment  *[]string         `json:"-" db:"-,omitempty"`
-    template    *string           `json:"-" db:"-,omitempty"`
-	content     *string           `json:"-" db:"-,omitempty"`
-	InsertedAt  time.Time         `json:"-" db:"inserted_at,omitempty"`
-	SendedAt    *time.Time        `json:"-" db:"sended_at,omitempty"`
-	MailgunM    *mailgun.Message  `json:"-" db:"mailgun_message,omitempty"`
+type Email struct {
+	ID          *int64               `json:"id,omitempty"`
+	Sender      *models.Sender       `json:"sender,omitempty"`
+	Subject     *string              `json:"dubject,omitempty"`
+	Attachments []*models.Attachment `json:"attachments,omitempty"`
+	Template    *models.Template     `json:"template,omitempty"`
+	Content     *models.Content      `json:"content,omitempty"`
+	InsertedAt  time.Time            `json:"inserted_at,omitempty"`
+	SendedAt    *time.Time           `json:"sended_at,omitempty"`
+	MailgunM    *mailgun.Message     `json:"mailgun_m,omitempty"`
 }
 
 
-func (m *Email) AddSenderEmail(e string) (err error){
-   m.senderEmail=&e	
-   return
-}
-
-func (m *Email) AddSenderName(n string) (err error){
-    m.senderName=&n	
-   return
-}
-
-func (m *Email) AddSubject(s string) (err error){
-    m.subject=&s
-   return
-}
-
-func (m *Email) AddRecipients(r ...string) (err error){
-    /*recipients:="mau.cdr.19@gmail.com"
-	m.MailgunM.AddRecipient(recipients)*/
+func (m *Email) AddSender(s interface{}) (err error) {
+	sender:=s.(models.Sender)
+	m.Sender = &sender
 	return
 }
 
-func (m *Email) AddAttachment(a string) (err error){
-  return
-}
-
-func (m *Email) AddTemplate(t string)(err error){
-    m.template=&t
+func (m *Email) AddSubject(s string) (err error) {
+	m.Subject = &s
 	return
 }
 
-func (m *Email) AddContent(t string)(err error){
-	m.content=&t
-    return 
+func (m *Email) AddRecipients(r interface{}) (err error) {
+	allrecipient:=r.(models.Recipients)
+	tos:=strings.Join(allrecipient.To,",")
+	fmt.Println(tos)
+	return
 }
 
-func (m *Email) SetValues()(err error){
+func (m *Email) AddAttachment(a interface{}) (err error) {
+	attachment:=a.(models.Attachment)
+	fmt.Println(attachment)
+	return
+}
+
+func (m *Email) AddTemplate(t interface{}) (err error) {
+	template:= t.(models.Template)
+	fmt.Println(template)
+	return
+}
+
+func (m *Email) AddContent(c interface{}) (err error) {
+	content:= c.(models.Content)
+	m.Content= &content
+	return
+}
+
+func (m *Email) SetValues() (err error) {
 	message1 := mailgun.NewMessage(
-		*m.senderEmail,
-		*m.subject,
-		*m.content,
-		"mau.cdr.19@gmail.com")	
-	m.MailgunM=message1	
-    return 
+		m.Sender.Email,
+		*m.Subject,
+		m.Content.Value,
+		"mau.cdr.19@gmail.com")
+	m.MailgunM = message1
+	return
 }

@@ -73,3 +73,16 @@ func (m *Email) GetPlainEmail() (email interface{}){
    email=&m.PlainEmail
    return
 }
+func (e *Email) GetInfo() map[string]interface{} {
+	return map[string]interface{}{
+		"id":          e.PlainEmail.ID,
+		"sender":      e.PlainEmail.Sender,
+		"subject":     e.PlainEmail.Subject,
+		"content":     e.PlainEmail.Content,
+		"attachments": e.PlainEmail.Attachments,
+		"recipients":  e.PlainEmail.Recipients,
+		"template":    e.PlainEmail.Template,
+		"created_at":  e.PlainEmail.CreatedAt,
+		"sended_at":   e.PlainEmail.SendedAt,
+	}
+}

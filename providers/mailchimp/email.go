@@ -103,8 +103,16 @@ func (m *Email) GetPlainEmail() (email interface{}){
    return
 }
 
- func (m *Email)RefactorEmail(e interface{}){
-	/* pemail=e.(model.PlainEmail)
-	 m.PlainEmail=pemail*/
-	 return
- }
+func (e *Email) GetInfo() map[string]interface{} {
+	return map[string]interface{}{
+		"id":          e.PlainEmail.ID,
+		"sender":      e.PlainEmail.Sender,
+		"subject":     e.PlainEmail.Subject,
+		"content":     e.PlainEmail.Content,
+		"attachments": e.PlainEmail.Attachments,
+		"recipients":  e.PlainEmail.Recipients,
+		"template":    e.PlainEmail.Template,
+		"created_at":  e.PlainEmail.CreatedAt,
+		"sended_at":   e.PlainEmail.SendedAt,
+	}
+}

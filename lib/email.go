@@ -8,4 +8,5 @@ type Email interface {
    AddAttachment(a interface{}) error
    AddTemplate(t interface{}) error
    AddContent(c interface{}) error
+   GetInfo() map[string]interface{}
 }

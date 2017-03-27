@@ -6,7 +6,7 @@ import (
 
 // EEmail struct provide plain email information
 type Email struct {
-	ID          int64         `json:"id" db:"id,omitempty"`
+	ID          int64         `json:"id,omitempty"`
 	Sender      *Sender       `json:"sender,omitempty"`
 	Subject     *string       `json:"subject,omitempty"`
 	Content     []*Content    `json:"content,omitempty"`
@@ -16,3 +16,4 @@ type Email struct {
 	CreatedAt   time.Time     `json:"created_at,omitempty"`
 	SendedAt    time.Time     `json:"sended_at,omitempty"`
 }
+

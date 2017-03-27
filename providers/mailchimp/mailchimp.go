@@ -1,9 +1,9 @@
 package mailchimp
 
 import (
-	"errors"
 	"github.com/mattbaird/gochimp"
 	"github.com/mauricio-cdr/config"
+	"github.com/ivan-iver/hermes/models"
 )
 
 var (
@@ -11,11 +11,11 @@ var (
 )
 
 type Mailchimp struct {
-	ID          int64
-	Name        string
-	APIKey      string
-	CounterM    int
-	MandrillAPI *gochimp.MandrillAPI
+	ID          int64                 `json:"id,omitempty"`
+	Name        string                `json:"name,omitempty"`
+	APIKey      string                `json:"api_key,omitempty"`
+	MandrillAPI *gochimp.MandrillAPI  `json:"mandril_api,omitempty"`
+	CounterM    int64                 `json:"counter_m,omitempty"`
 }
 
 func NewProvider() *Mailchimp {
@@ -32,10 +32,10 @@ func (p *Mailchimp) Init() (err error) {
 	p.Name = p.GetName()
 	p.APIKey, err = c.Property(p.Name, "apikey")
 	if err != nil {
-		return errors.New("ERR_INVALID_APIKEY")
+		return models.ErrInvalidAPIKey
 	}
 	if p.MandrillAPI, err = gochimp.NewMandrill(p.APIKey); err != nil {
-		return errors.New("ERR_INVALID_APIKEY")
+		return models.ErrInvalidAPIKey
 	}
 	return
 }
@@ -45,7 +45,7 @@ func (p *Mailchimp) SendEmail(emailI interface{}) (err error) {
 	email := *emailI.(*Email)
 	_, err = p.MandrillAPI.MessageSend(email.GochimpM, false)
 	if err != nil {
-		return errors.New("ERR_INVALID_MESSAGE")
+		return models.ErrInvalidMessage
 	}
 	return
 }
@@ -59,6 +59,15 @@ func (p *Mailchimp) NewEmail(se interface{}, s string,c interface{}) (m interfac
 	return
 }
 
+func (p *Mailchimp) RefactorEmail(mail map[string]interface{})(ms interface{}, err error){
+	var m = Email{}
+	m.AddSender(mail["sender"])
+	m.AddSubject(mail["subject"].(string))
+	m.AddContent(mail["content"])
+	m.AddRecipients(mail["recipients"])
+	ms = &m
+	return
+}
 func (p *Mailchimp) ToString() string {
 	return "Name:" + p.Name + "-APIKey:" + p.APIKey
 }

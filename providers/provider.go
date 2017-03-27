@@ -1,8 +1,8 @@
 package providers 
 
 import (
-    "errors"
     "github.com/ivan-iver/hermes/lib"
+    "github.com/ivan-iver/hermes/models"
     "github.com/ivan-iver/hermes/providers/mailgun"
     "github.com/ivan-iver/hermes/providers/sendgrid"
     "github.com/ivan-iver/hermes/providers/mailchimp"
@@ -18,7 +18,7 @@ func NewProvider(options []string) (p interface{},err error) {
   case "sendgrid": 
      p= sendgrid.NewProvider()
   default: 
-     err = errors.New("ERR_UNKNOWN_PROVIDER")
+     err = models.ErrUnknownProvider
   }
   return  
 }

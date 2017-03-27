@@ -1,9 +1,9 @@
 package mailgun
 
 import (
-	"errors"
 	"github.com/mauricio-cdr/config"
 	"gopkg.in/mailgun/mailgun-go.v1"
+	"github.com/ivan-iver/hermes/models"
 )
 
 var (
@@ -11,12 +11,12 @@ var (
 )
 
 type Mailgun struct {
-	ID           int64  `json:"-" db:"id"`
-	Name         string `json:"-" db:"provider_name"`
-	Domain       string `json:"-" db:"-"`
-	APIKey       string `json:"-" db:"-"`
-	PublicAPIKey string `json:"-" db:"-"`
-	CounterM     int64  `json:"-" db:"counter"`
+	ID           int64  `json:"id,omitempty"`
+	Name         string `json:"name,omitempty"`
+	Domain       string `json:"domain,omitempty"`
+	APIKey       string `json:"api_key,omitempty"`
+	PublicAPIKey string `json:"public_api_key,omitempty"`
+	CounterM     int64  `json:"counter_m,omitempty"`
 }
 
 func NewProvider() *Mailgun {
@@ -32,13 +32,13 @@ func (p *Mailgun) Init() (err error) {
 	c, err := config.NewConfig(cfgfile)
 	p.Name = p.GetName()
 	if p.PublicAPIKey, err = c.Property(p.Name, "publicapikey"); err != nil {
-		return errors.New("ERR_INVALID_PUBAPIKEY")
+		return models.ErrInvalidPublicAPIKey
 	}
 	if p.APIKey, err = c.Property(p.Name, "apikey"); err != nil {
-		return errors.New("ERR_INVALID_APIKEY")
+		return models.ErrInvalidAPIKey
 	}
 	if p.Domain, err = c.Property(p.Name, "domain"); err != nil {
-		return errors.New("ERR_INVALID_APIKEY")
+		return models.ErrInvalidDomain
 	}
 
 	return
@@ -57,7 +57,7 @@ func (p *Mailgun) SendEmail(emailI interface{}) (err error) {
 
 	_, _, err = mg.Send(message)
 	if err != nil {
-		return errors.New("ERR_INVALID_MESSAGE")
+		return models.ErrInvalidMessage
 	}
 	return
 }
@@ -71,6 +71,17 @@ func (p *Mailgun) NewEmail(se interface{}, s string, t interface{}) (ms interfac
 	ms = &m
 	return
 
+}
+
+func (p *Mailgun) RefactorEmail(mail map[string]interface{})(ms interface{}, err error){
+	var m = Email{}
+	m.AddSender(mail["sender"])
+	m.AddSubject(mail["subject"].(string))
+	m.AddContent(mail["content"])
+	m.SetValues()
+	m.AddRecipients(mail["recipients"])
+	ms = &m
+	return
 }
 
 func (p *Mailgun) ToString() string {

@@ -2,8 +2,8 @@ package hermes
 
 import (
 	"container/ring"
-	"errors"
 	"github.com/ivan-iver/hermes/lib"
+	"github.com/ivan-iver/hermes/models"
 	"github.com/ivan-iver/hermes/providers"
 )
 
@@ -31,7 +31,7 @@ func New() (e EmailProvider, err error) {
 		}
 	}
 	if invalidProviders == len(DefaultOrder) {
-		err = errors.New("ERR_INVALID_PROVIDERS")
+		err = models.ErrInvalidProviders
 	}
 	return
 }
@@ -63,22 +63,25 @@ func (e *EmailProvider) Sort(order ...string) (err error) {
 		}
 	}
 	if invalidProviders == len(DefaultOrder) {
-		err = errors.New("ERR_INVALID_PROVIDERS")
+		err = models.ErrInvalidProviders
 	}
 	return
 }
 
 func (e *EmailProvider) Send(m interface{}) (err error) {
 	var emailSended = false
+	var emailToSend = m.(lib.Email)
 	head := e.Providers.Value.(lib.Provider)
 	for !emailSended {
 		provider := e.Providers.Value.(lib.Provider)
-		if err = provider.SendEmail(m); err != nil {
-			if err.Error() == "ERR_LIMIT_REACHED" {
-				e.Providers = e.Providers.Next()
+		if err = provider.SendEmail(emailToSend); err != nil {
+			if err== models.ErrLimitMessagesReached {
+				email,_ := provider.RefactorEmail(emailToSend.GetInfo())
+				emailToSend=email.(lib.Email)
+				e.NextProvider()
 				current := e.Providers.Value.(lib.Provider)
 				if providers.Equals(head, current) {
-					return errors.New("ERR_ALL_LIMITS_REACHED")
+					return models.ErrAllLimitsReached
 				}
 			}
 		} else {

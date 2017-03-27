@@ -3,8 +3,14 @@ package models
 import "errors"
 
 var (
-	ErrLimitDailyMessages  = errors.New(`provider: Daily messages limit reached`)
-	ErrLimitPerHourMesages = errors.New(`provider: Per hour messages limit reached`)
-	ErrServerError         = errors.New(`provider: Internal error`)
-	ErrAPIKeyNotDefined    = errors.New(`provider: APIKEY not defined`)
+	ErrLimitMessagesReached = errors.New("ERR_LIMIT_REACHED")
+	ErrServerError          = errors.New("ERR_INTERNAL_ERROR")
+	ErrInvalidDomain        = errors.New("ERR_INVALID_DOMAIN")
+	ErrInvalidAPIKey        = errors.New("ERR_INVALID_APIKEY")
+	ErrInvalidMessage       = errors.New("ERR_INVALID_MESSAGE")
+	ErrUnknownProvider      = errors.New("ERR_UNKNOWN_PROVIDER")
+	ErrInvalidProviders     = errors.New("ERR_INVALID_PROVIDERS")
+	ErrInvalidPublicAPIKey  = errors.New("ERR_INVALID_PUBAPIKEY")
+	ErrLimitDailyMessages   = errors.New("ERR_DAILY_LIMIT_APIKEY")
+	ErrAllLimitsReached     = errors.New("ERR_ALL_LIMITS_REACHED")
 )

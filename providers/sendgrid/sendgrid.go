@@ -1,10 +1,9 @@
 package sendgrid
 
 import (
-	"fmt"
-	"errors"
 	"github.com/mauricio-cdr/config"
 	"github.com/sendgrid/sendgrid-go"
+	"github.com/ivan-iver/hermes/models"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
@@ -15,10 +14,10 @@ var (
 )
 
 type Sendgrid struct {
-	ID        int64  `json:"-" db:"id"`
-	Name      string `json:"-" db:"provider_name"`
-	APIKey    string `json:"-" db:"-"`
-	ConunterM int64  `json:"-" db:"counter_m"`
+	ID        int64  `json:"id,omitempty"`
+	Name      string `json:"name,omitempty"`
+	APIKey    string `json:"api_key,omitempty"`
+	ConunterM int64  `json:"counter_m,omitempty"`
 }
 
 func NewProvider() *Sendgrid {
@@ -34,7 +33,7 @@ func (p *Sendgrid) Init() (err error) {
 	c, err := config.NewConfig(cfgfile)
 	p.Name = p.GetName()
 	if p.APIKey, err = c.Property(p.Name, "apikey"); err != nil {
-		return errors.New("ERR_INVALID_APIKEY")
+		return models.ErrInvalidAPIKey
 	}
 	return
 }
@@ -47,13 +46,12 @@ func (p *Sendgrid) SendEmail(emailI interface{}) (err error) {
 	request.Body = mail.GetRequestBody(email.SendgridM)
 	response, err := sendgrid.API(request)
 	if err != nil {
-		fmt.Printf("----------------------%+v",err)
-		return errors.New("ERR_INVALID_MESSAGE")
+		return models.ErrInvalidMessage
 	} else {
 		if response.StatusCode == 429 {
-			return errors.New("ERR_LIMIT_REACHED")
+			return models.ErrLimitMessagesReached
 		} else if response.StatusCode == 401 {
-			return errors.New("ERR_INVALID_APIKEY")
+			return models.ErrInvalidAPIKey
 		}
 		return
 	}
@@ -65,6 +63,17 @@ func (p *Sendgrid) NewEmail(sender interface{},s string, c interface{}) (ms inte
 	m.AddSender(sender)
 	m.AddSubject(s)
 	m.AddContent(c)
+	ms = &m
+	return
+}
+
+func (p *Sendgrid) RefactorEmail(mail map[string]interface{})(ms interface{}, err error){
+	var m = Email{}
+	m = NewEmail()
+	m.AddSender(mail["sender"])
+	m.AddSubject(mail["subject"].(string))
+	m.AddContent(mail["content"])
+	m.AddRecipients(mail["recipients"])
 	ms = &m
 	return
 }

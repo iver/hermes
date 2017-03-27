@@ -40,7 +40,7 @@ func (p *Mailchimp) Init() (err error) {
 	return
 }
 
-//  sendemail function with mailchimp provider
+//  SendEmail function with mailchimp provider
 func (p *Mailchimp) SendEmail(emailI interface{}) (err error) {
 	email := *emailI.(*Email)
 	_, err = p.MandrillAPI.MessageSend(email.GochimpM, false)
@@ -50,11 +50,11 @@ func (p *Mailchimp) SendEmail(emailI interface{}) (err error) {
 	return
 }
 
-func (p *Mailchimp) NewEmail(se interface{}, s string,t interface{}) (m interface{}, err error) {
+func (p *Mailchimp) NewEmail(se interface{}, s string,c interface{}) (m interface{}, err error) {
 	var mm = Email{}
 	mm.AddSender(se)
 	mm.AddSubject(s)
-	mm.AddTemplate(t)
+	mm.AddContent(c)
 	m = &mm
 	return
 }

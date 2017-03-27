@@ -2,34 +2,33 @@ package mailchimp
 
 import (
 	"fmt"
-	"time"
 	"github.com/mattbaird/gochimp"
 	"github.com/mauricio-cdr/config"
 	"github.com/ivan-iver/hermes/models"
 )
 
 type Email struct {
-	ID         int64           `json:"-" db:"id,omitempty"`
-	InsertedAt time.Time       `json:"-" db:"inserted_at,omitempty"`
-	SendedAt   time.Time       `json:"-" db:"sended_at,omitempty"`
-	GochimpM   gochimp.Message `json:"-" db:"gochimp_message,omitempty"`
+    PlainEmail  models.Email    `json:"plain_email,omitempty"`
+	GochimpM    gochimp.Message  `json:"gochimp_m,omitempty"`
 }
 
-
 func (m *Email) AddSender(s interface{}) (err error) {
-	sender:=s.(models.Sender)
+	sender := s.(models.Sender)
 	m.GochimpM.FromEmail = sender.Email
-	m.GochimpM.FromName  = sender.Name
+	m.GochimpM.FromName = sender.Name
+	m.PlainEmail.Sender =&sender
 	return
 }
 
 func (m *Email) AddSubject(s string) (err error) {
+	m.PlainEmail.Subject = &s
 	m.GochimpM.Subject = s
 	return
 }
 
 func (m *Email) AddRecipients(r interface{}) (err error) {
-	recipient:= r.(models.Recipients)
+	recipient := r.(models.Recipients)
+	m.PlainEmail.Recipients= &recipient
 	recipients := []gochimp.Recipient{}
 	for _, email := range recipient.To {
 		recipients = append(recipients, gochimp.Recipient{Email: email})
@@ -39,12 +38,15 @@ func (m *Email) AddRecipients(r interface{}) (err error) {
 }
 
 func (m *Email) AddAttachment(a interface{}) (err error) {
-	attachment:=a.(models.Attachment)
-	fmt.Println(attachment)
+	attachment := a.(models.Attachment)
+	m.PlainEmail.Attachments = append(m.PlainEmail.Attachments,&attachment)
 	return
 }
 
 func (m *Email) AddTemplate(t interface{}) (err error) {
+	template:= t.(models.Template)
+	m.PlainEmail.Template=&template
+
 	c, err := config.NewConfig()
 	apiKey, err := c.Property("mailchimp", "apikey")
 	if err != nil {
@@ -72,7 +74,37 @@ func (m *Email) AddTemplate(t interface{}) (err error) {
 }
 
 func (m *Email) AddContent(c interface{}) (err error) {
-	content:=c.(models.Content)
-	fmt.Println(content)
+	content := c.(models.Content)
+	m.PlainEmail.Content = append(m.PlainEmail.Content,&content)
+	conf, err := config.NewConfig()
+	apiKey, err := conf.Property("mailchimp", "apikey")
+	if err != nil {
+		return err
+	}
+	mandrillAPI, err := gochimp.NewMandrill(apiKey)
+	if err != nil {
+		return err
+	}
+
+	templateName := "welcome email2"
+	contentVar := gochimp.Var{"main", content.Value}
+	contentM := []gochimp.Var{contentVar}
+
+	renderedTemplate, err := mandrillAPI.TemplateRender(templateName, contentM, nil)
+	if err != nil {
+		return err
+	}
+	m.GochimpM.Html = renderedTemplate
 	return
 }
+
+func (m *Email) GetPlainEmail() (email interface{}){
+   	email=&m.PlainEmail
+   return
+}
+
+ func (m *Email)RefactorEmail(e interface{}){
+	/* pemail=e.(model.PlainEmail)
+	 m.PlainEmail=pemail*/
+	 return
+ }

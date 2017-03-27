@@ -1,6 +1,7 @@
 package sendgrid
 
 import (
+	"fmt"
 	"errors"
 	"github.com/mauricio-cdr/config"
 	"github.com/sendgrid/sendgrid-go"
@@ -46,6 +47,7 @@ func (p *Sendgrid) SendEmail(emailI interface{}) (err error) {
 	request.Body = mail.GetRequestBody(email.SendgridM)
 	response, err := sendgrid.API(request)
 	if err != nil {
+		fmt.Printf("----------------------%+v",err)
 		return errors.New("ERR_INVALID_MESSAGE")
 	} else {
 		if response.StatusCode == 429 {

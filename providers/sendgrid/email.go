@@ -1,25 +1,20 @@
 package sendgrid
 
 import (
-    "fmt"
-	"time"
 	"github.com/ivan-iver/hermes/models"
 	mail "github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
 type Email struct {
-	ID          int64                `json:"id,omitempty"`
-	Sender      *models.Sender       `json:"sender,omitempty"`
-	Content     []*models.Content    `json:"content,omitempty"`
-	Attachments []*models.Attachment `json:"attachments,omitempty"`
-	CreatedAt   *time.Time           `json:"created_at,omitempty"`
-	SendedAt    *time.Time           `json:"sended_at,omitempty"`
-	SendgridM   *mail.SGMailV3       `json:"id,omitempty"`
+    PlainEmail  models.Email     `json:"plain_email,omitempty"`
+	SendgridM   *mail.SGMailV3    `json:"id,omitempty"`
 }
 
 func (m *Email) AddSender(s interface{}) (err error) {
 	sender:=s.(models.Sender)
+	m.PlainEmail.Sender=&sender
 	m.SendgridM.From.Name = sender.Name
+	
 	m.SendgridM.From.Address = sender.Email
 	return
 }
@@ -27,12 +22,13 @@ func (m *Email) AddSender(s interface{}) (err error) {
 
 func (m *Email) AddSubject(s string) (err error) {
 	m.SendgridM.Subject = s
+	m.PlainEmail.Subject=&s
 	return
 }
 
 func (m *Email) AddRecipients(r interface{}) (err error) {
 	allrecipient:=r.(models.Recipients)
-	
+	m.PlainEmail.Recipients=&allrecipient
 	recipients := []*mail.Email{}
 
 	for _, email := range allrecipient.To {
@@ -47,13 +43,13 @@ func (m *Email) AddRecipients(r interface{}) (err error) {
 
 func (m *Email) AddAttachment(a interface{}) (err error) {
 	attachment:=a.(models.Attachment)
-	fmt.Println(attachment)
+	m.PlainEmail.Attachments = append(m.PlainEmail.Attachments,&attachment)
 	return
 }
 
 func (m *Email) AddTemplate(t interface{}) (err error) {
 	template:=t.(models.Template)
-	fmt.Println(template)
+	m.PlainEmail.Template=&template
 	return
 }
 
@@ -67,7 +63,13 @@ func NewEmail() Email {
 
 func (m *Email) AddContent(c interface{}) (err error) {
 	content:=c.(models.Content)
+	m.PlainEmail.Content = append(m.PlainEmail.Content,&content)
 	contentM := mail.NewContent("text/plain", content.Value)
 	m.SendgridM.AddContent(contentM)
 	return
+}
+
+func (m *Email) GetPlainEmail() (email interface{}){
+   email=&m.PlainEmail
+   return
 }

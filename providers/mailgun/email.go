@@ -13,7 +13,10 @@ type Email struct {
 
 
 func (m *Email) AddSender(s interface{}) (err error) {
-	sender:=s.(models.Sender)
+	sender,ok:=s.(models.Sender)
+	if !ok{
+		return models.ErrInvalidSender
+	}
 	m.PlainEmail.Sender = &sender
 	return
 }
@@ -24,26 +27,38 @@ func (m *Email) AddSubject(s string) (err error) {
 }
 
 func (m *Email) AddRecipients(r interface{}) (err error) {
-	allrecipient:=r.(models.Recipients)
+	allrecipient,ok:=r.(models.Recipients)
+	if !ok{
+		return models.ErrInvalidRecipients
+	}
 	m.PlainEmail.Recipients=&allrecipient
 	//tos:=strings.Join(allrecipient.To,",")
 	return
 }
 
 func (m *Email) AddAttachment(a interface{}) (err error) {
-	attachment:=a.(models.Attachment)
+	attachment,ok:=a.(models.Attachment)
+	if !ok{
+		return models.ErrInvalidAttachment
+	}
 	m.PlainEmail.Attachments = append(m.PlainEmail.Attachments,&attachment)
 	return
 }
 
 func (m *Email) AddTemplate(t interface{}) (err error) {
-	template:= t.(models.Template)
+	template,ok:= t.(models.Template)
+	if !ok{
+		return models.ErrInvalidTemplate
+	}
 	m.PlainEmail.Template=&template
 	return
 }
 
 func (m *Email) AddContent(c interface{}) (err error) {
-	content:= c.(models.Content)
+	content,ok:= c.(models.Content)
+	if !ok{
+		return models.ErrInvalidContent
+	}	
 	m.PlainEmail.Content = append(m.PlainEmail.Content,&content)
 	return
 }

@@ -9,11 +9,15 @@ import (
 
 type Email struct {
     PlainEmail  models.Email    `json:"plain_email,omitempty"`
-	GochimpM    gochimp.Message  `json:"gochimp_m,omitempty"`
+	GochimpM    gochimp.Message `json:"gochimp_m,omitempty"`
 }
 
 func (m *Email) AddSender(s interface{}) (err error) {
-	sender := s.(models.Sender)
+	sender,ok := s.(models.Sender)
+	if !ok{
+		err=models.ErrInvalidSender
+		return 
+	}
 	m.GochimpM.FromEmail = sender.Email
 	m.GochimpM.FromName = sender.Name
 	m.PlainEmail.Sender =&sender
@@ -27,7 +31,10 @@ func (m *Email) AddSubject(s string) (err error) {
 }
 
 func (m *Email) AddRecipients(r interface{}) (err error) {
-	recipient := r.(models.Recipients)
+	recipient,ok:= r.(models.Recipients)
+	if !ok{
+		return models.ErrInvalidRecipients
+	}
 	m.PlainEmail.Recipients= &recipient
 	recipients := []gochimp.Recipient{}
 	for _, email := range recipient.To {
@@ -38,13 +45,19 @@ func (m *Email) AddRecipients(r interface{}) (err error) {
 }
 
 func (m *Email) AddAttachment(a interface{}) (err error) {
-	attachment := a.(models.Attachment)
+	attachment,ok:= a.(models.Attachment)
+	if !ok{
+		return models.ErrInvalidAttachment
+	}
 	m.PlainEmail.Attachments = append(m.PlainEmail.Attachments,&attachment)
 	return
 }
 
 func (m *Email) AddTemplate(t interface{}) (err error) {
-	template:= t.(models.Template)
+	template,ok:= t.(models.Template)
+	if !ok{
+		return models.ErrInvalidTemplate
+	}
 	m.PlainEmail.Template=&template
 
 	c, err := config.NewConfig()
@@ -74,7 +87,10 @@ func (m *Email) AddTemplate(t interface{}) (err error) {
 }
 
 func (m *Email) AddContent(c interface{}) (err error) {
-	content := c.(models.Content)
+	content,ok := c.(models.Content)
+	if !ok{
+		return models.ErrInvalidContent
+	}
 	m.PlainEmail.Content = append(m.PlainEmail.Content,&content)
 	conf, err := config.NewConfig()
 	apiKey, err := conf.Property("mailchimp", "apikey")

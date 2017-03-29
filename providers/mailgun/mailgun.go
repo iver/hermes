@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	cfgfile = `provider.conf`
+	Cfgfile = `provider.conf`
 )
 
 type Mailgun struct {
@@ -29,7 +29,7 @@ func (p *Mailgun) GetName() (name string) {
 }
 
 func (p *Mailgun) Init() (err error) {
-	c, err := config.NewConfig(cfgfile)
+	c, err := config.NewConfig(Cfgfile)
 	p.Name = p.GetName()
 	if p.PublicAPIKey, err = c.Property(p.Name, "publicapikey"); err != nil {
 		return models.ErrInvalidPublicAPIKey
@@ -62,11 +62,17 @@ func (p *Mailgun) SendEmail(emailI interface{}) (err error) {
 	return
 }
 
-func (p *Mailgun) NewEmail(se interface{}, s string, t interface{}) (ms interface{}, err error) {
+func (p *Mailgun) NewEmail(se interface{}, s string, c interface{}) (ms interface{}, err error) {
 	var m = Email{}
-	m.AddSubject(s)
-	m.AddSender(se)
-	m.AddContent(t)
+	if err=m.AddSender(se);err!=nil{
+		return m,err
+	}
+	if err=m.AddSubject(s);err!=nil{
+		return 
+	}
+	if err=m.AddContent(c);err!=nil{
+		return 
+	}
 	m.SetValues()
 	ms = &m
 	return

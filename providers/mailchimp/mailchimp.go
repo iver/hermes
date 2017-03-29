@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	cfgfile = `provider.conf`
+	Cfgfile = `provider.conf`
 )
 
 type Mailchimp struct {
@@ -28,7 +28,7 @@ func (p *Mailchimp) GetName() (name string) {
 }
 
 func (p *Mailchimp) Init() (err error) {
-	c, err := config.NewConfig(cfgfile)
+	c, err := config.NewConfig(Cfgfile)
 	p.Name = p.GetName()
 	p.APIKey, err = c.Property(p.Name, "apikey")
 	if err != nil {
@@ -52,9 +52,16 @@ func (p *Mailchimp) SendEmail(emailI interface{}) (err error) {
 
 func (p *Mailchimp) NewEmail(se interface{}, s string,c interface{}) (m interface{}, err error) {
 	var mm = Email{}
-	mm.AddSender(se)
-	mm.AddSubject(s)
-	mm.AddContent(c)
+	if err=mm.AddSender(se);err!=nil{
+		return m,err
+	}
+	if err=mm.AddSubject(s);err!=nil{
+		return 
+	}
+	if err=mm.AddContent(c);err!=nil{
+		return 
+	}
+
 	m = &mm
 	return
 }

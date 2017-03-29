@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	cfgfile     = `provider.conf`
+	Cfgfile     = `provider.conf`
 	sApiVersion = "/v3/mail/send"
 	sBasePath   = "https://api.sendgrid.com"
 )
@@ -30,7 +30,7 @@ func (p *Sendgrid) GetName() (name string) {
 }
 
 func (p *Sendgrid) Init() (err error) {
-	c, err := config.NewConfig(cfgfile)
+	c, err := config.NewConfig(Cfgfile)
 	p.Name = p.GetName()
 	if p.APIKey, err = c.Property(p.Name, "apikey"); err != nil {
 		return models.ErrInvalidAPIKey
@@ -57,12 +57,18 @@ func (p *Sendgrid) SendEmail(emailI interface{}) (err error) {
 	}
 }
 
-func (p *Sendgrid) NewEmail(sender interface{},s string, c interface{}) (ms interface{}, err error) {
+func (p *Sendgrid) NewEmail(se interface{},s string, c interface{}) (ms interface{}, err error) {
 	var m = Email{}
 	m = NewEmail()
-	m.AddSender(sender)
-	m.AddSubject(s)
-	m.AddContent(c)
+	if err=m.AddSender(se);err!=nil{
+		return m,err
+	}
+	if err=m.AddSubject(s);err!=nil{
+		return 
+	}
+	if err=m.AddContent(c);err!=nil{
+		return 
+	}
 	ms = &m
 	return
 }

@@ -23,6 +23,11 @@ func TestCreateHermesOK(t *testing.T) {
 	return
 }
 
+func TestCreateHermesFail(t *testing.T) {
+    //TODO..
+	return
+}
+
 func TestSendEmailOK(t *testing.T) {
     var err error
 	iEmail:= CorrectEmail()
@@ -34,6 +39,11 @@ func TestSendEmailOK(t *testing.T) {
 	  t.Error("SendEmail()",err)
 	}
 	
+	return
+}
+
+func TestSendEmailFail(t *testing.T) {
+    //TODO	
 	return
 }
 
@@ -50,11 +60,21 @@ func TestChangeProviderOK(t *testing.T) {
 	return
 }
 
+func TestChangeProviderFail(t *testing.T) {
+	//TODO: Implement
+	return
+}
+
 func TestSortProvidersOK(t *testing.T) {
 	log.Println("Order:",emailProvider.Order())
 	newOrder:= []string{"sendgrid","mailgun","mailchimp"}
 	emailProvider.Sort(newOrder...)
 	log.Println("New Order:",emailProvider.Order())
 	
+	return
+}
+
+func TestSortProvidersOK(t *testing.T) {
+	//TODO
 	return
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/ivan-iver/hermes/lib"
     )  
 
-func TestCreateProviders(t *testing.T) {
+func TestCreateProvidersOK(t *testing.T) {
 	var err error
 	var options1 = []string{"mailchimp"}
 	var options2 = []string{"sendgrid"}
@@ -41,6 +41,11 @@ func TestCreateProviders(t *testing.T) {
 		log.Printf("ProvderName:%v",name)
 		t.Error("GetName:Diferent to mailgun", err)
 	}
+	return
+}
+
+func TestCreateProvidersOK(t *testing.T) {
+	//TODO:
 	return
 
 }

@@ -11,7 +11,7 @@ type Email struct{
 	Recipients   models.Recipients
 }
 
-//Peticiónn para registro de usuario 
+//CorrectEmail return valid information to an email
 func CorrectEmail() (e *Email) {
 	e = &Email{
 		Sender:models.Sender{Name:"A friend",Email:"hermes@hermes.com"},

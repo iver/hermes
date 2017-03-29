@@ -1,29 +1,72 @@
 package providers_test
 
 import (
+	"log"
 	"testing"
 	"github.com/ivan-iver/hermes/models"
     "github.com/ivan-iver/hermes/providers/mailchimp"
 )
 
-func TestMailchimpSendEmail(t *testing.T) {
-	var err error
+func TestCreateMailchimpProviderOK(t *testing.T) {
 	var provider = mailchimp.Mailchimp{}
-	var emailM *mailchimp.Email
-	var sender = models.Sender{Name:"Un Amigo",Email:"mailchimp@hermes.mx"}
-	subject := "Un saludo"
-    var content = models.Content{Value:"Hola desde mailchimp"}
-	var recipients = models.Recipients{To:[]string{"mau.cdr.19@gmail.com", "mau16@ciencias.unam.mx"}};
-    if err = provider.Init(); err !=nil{
+	if err:= provider.Init(); err !=nil{
 		 t.Error("provider:Init()-", err)
 	}
-    email,err:= provider.NewEmail(sender,subject,content)
-	emailM=email.(*mailchimp.Email)
-	emailM.AddRecipients(recipients)
-	if err = provider.SendEmail(emailM); err != nil {
+
+	if name:=provider.GetName(); name != "mailchimp" {
+        log.Println("Provider name:",name)
+		t.Error("provider:Wrong Name")
+	}
+	return
+}
+
+func TestCreateMailchimpProviderFail(t *testing.T) {
+	mailchimp.Cfgfile="other.conf"
+	 defer func() {
+		if r := recover(); r != nil {
+			mailchimp.Cfgfile=`provider.conf`
+		}
+		return
+	}()
+	var provider = mailchimp.Mailchimp{}
+	if err:= provider.Init(); err ==nil{
+		 t.Error("provider:Init()-", err)
+	}
+	return
+}
+
+func TestCreateMailchimpEmailOK(t *testing.T) {
+	var provider = ValidMailchimpProvider()
+	var sender = models.Sender{Name:"Un Friend",Email:"mailchimp@hermes.mx"}
+	var subject = "Welcome!!"
+    var content = models.Content{Value:"Hello from mailchimp"}
+    if _,err:= provider.NewEmail(sender,subject,content); err!=nil{
+		t.Error("provider:NewEmail()",err)
+	}
+	return
+}
+
+func TestCreateMailchimpEmailFail(t *testing.T) {
+	var provider = ValidMailchimpProvider()
+	var sender = "sender"
+	var subject = "Welcome!!"
+    var content = models.Content{Value:"Hello from mailchimp"}
+    if _,err:= provider.NewEmail(sender,subject,content); err==nil{
+		t.Error("provider:NewEmail()",err)
+	}
+	return
+}
+
+func TestMailchimpSendEmailOK(t *testing.T) {
+	var provider = ValidMailchimpProvider()
+	var emailM   = ValidMailchimpEmail()
+	if err := provider.SendEmail(emailM); err != nil {
 		t.Error("provider:SendEmail()-", err)
 	}
-
 	return
+}
 
+func TestMailchimpSendEmailFail(t *testing.T) {
+	//TODO:
+	return
 }

@@ -1,7 +1,7 @@
 package sendgrid
 
 import (
-	"github.com/mauricio-cdr/config"
+	"github.com/notifik/config"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/ivan-iver/hermes/models"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"

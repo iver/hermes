@@ -1,7 +1,7 @@
 package mailgun
 
 import (
-	"github.com/mauricio-cdr/config"
+	"github.com/notifik/config"
 	"gopkg.in/mailgun/mailgun-go.v1"
 	"github.com/ivan-iver/hermes/models"
 )

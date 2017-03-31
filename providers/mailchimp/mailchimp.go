@@ -1,8 +1,8 @@
 package mailchimp
 
 import (
+	"github.com/notifik/config"
 	"github.com/mattbaird/gochimp"
-	"github.com/mauricio-cdr/config"
 	"github.com/ivan-iver/hermes/models"
 )
 

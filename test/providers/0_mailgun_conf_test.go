@@ -16,10 +16,10 @@ func ValidMailgunProvider() (e *mailgun.Mailgun) {
 //ValidEmail
 func ValidMailgunEmail() (e *mailgun.Email) {
 	email := &mailgun.Email{}
-	sender:=models.Sender{
-			Email: "mailgun@hermes.com",
-			Name:  "a friend",
-		}
+	sender := models.Sender{
+		Email: "mailgun@hermes.com",
+		Name:  "a friend",
+	}
 	email.AddSender(sender)
 	email.AddContent(
 		models.Content{
@@ -27,10 +27,8 @@ func ValidMailgunEmail() (e *mailgun.Email) {
 		},
 	)
 	email.AddSubject("welcome!!!")
-	email.AddRecipients(models.Recipients{To: []string{"mau.cdr.19@gmail.com", "mau_dsx2@hotmail.com"}})
 	email.SetValues()
+	email.AddRecipients(models.Recipients{To: []string{"mau.cdr.19@gmail.com", "mau_dsx2@hotmail.com"}})
 	e = email
 	return
 }
-
-

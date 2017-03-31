@@ -1,9 +1,11 @@
 package mailgun
 
 import (
+	"strings"
+
+	"github.com/ivan-iver/hermes/models"
 	"github.com/notifik/config"
 	"gopkg.in/mailgun/mailgun-go.v1"
-	"github.com/ivan-iver/hermes/models"
 )
 
 var (
@@ -44,34 +46,40 @@ func (p *Mailgun) Init() (err error) {
 	return
 }
 
-// send email method with mailgun provider
-
+//SendEmail send a mailgun email
 func (p *Mailgun) SendEmail(emailI interface{}) (err error) {
-	mg := mailgun.NewMailgun(p.Domain, p.APIKey, p.PublicAPIKey)
+	email := emailI.(*Email)
 
+	mg := mailgun.NewMailgun(p.Domain, p.APIKey, p.PublicAPIKey)
+	tos := strings.Join(email.PlainEmail.Recipients.To, ",")
 	message := mailgun.NewMessage(
-		"mailgun@hermes.mx",
-		"Un saludo",
-		"<div><h1>Hola desde mailgun<h1><h4>Template desde hermes</h4></div>",
-		"mau.cdr.19@gmail.com")
+		email.PlainEmail.Sender.Email,
+		*email.PlainEmail.Subject,
+		email.PlainEmail.Content[0].Value,
+		tos)
 
 	_, _, err = mg.Send(message)
+	/*fmt.Println(strings.Fields(err.Error())[2])
+	if err.Error() == "Message not valid" {
+		return models.ErrInvalidMessage
+	}*/
 	if err != nil {
 		return models.ErrInvalidMessage
 	}
+
 	return
 }
 
 func (p *Mailgun) NewEmail(se interface{}, s string, c interface{}) (ms interface{}, err error) {
 	var m = Email{}
-	if err=m.AddSender(se);err!=nil{
-		return m,err
+	if err = m.AddSender(se); err != nil {
+		return m, err
 	}
-	if err=m.AddSubject(s);err!=nil{
-		return 
+	if err = m.AddSubject(s); err != nil {
+		return
 	}
-	if err=m.AddContent(c);err!=nil{
-		return 
+	if err = m.AddContent(c); err != nil {
+		return
 	}
 	m.SetValues()
 	ms = &m
@@ -79,7 +87,7 @@ func (p *Mailgun) NewEmail(se interface{}, s string, c interface{}) (ms interfac
 
 }
 
-func (p *Mailgun) RefactorEmail(mail map[string]interface{})(ms interface{}, err error){
+func (p *Mailgun) RefactorEmail(mail map[string]interface{}) (ms interface{}, err error) {
 	var m = Email{}
 	m.AddSender(mail["sender"])
 	m.AddSubject(mail["subject"].(string))

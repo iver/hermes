@@ -2,6 +2,7 @@ package hermes
 
 import (
 	"container/ring"
+
 	"github.com/ivan-iver/hermes/lib"
 	"github.com/ivan-iver/hermes/models"
 	"github.com/ivan-iver/hermes/providers"
@@ -68,6 +69,7 @@ func (e *EmailProvider) Sort(order ...string) (err error) {
 	return
 }
 
+//Send ...
 func (e *EmailProvider) Send(m interface{}) (err error) {
 	var emailSended = false
 	var emailToSend = m.(lib.Email)
@@ -75,14 +77,16 @@ func (e *EmailProvider) Send(m interface{}) (err error) {
 	for !emailSended {
 		provider := e.Providers.Value.(lib.Provider)
 		if err = provider.SendEmail(emailToSend); err != nil {
-			if err== models.ErrLimitMessagesReached {
-				email,_ := provider.RefactorEmail(emailToSend.GetInfo())
-				emailToSend=email.(lib.Email)
+			if err == models.ErrLimitMessagesReached {
+				email, _ := provider.RefactorEmail(emailToSend.GetInfo())
+				emailToSend = email.(lib.Email)
 				e.NextProvider()
 				current := e.Providers.Value.(lib.Provider)
 				if providers.Equals(head, current) {
 					return models.ErrAllLimitsReached
 				}
+			} else {
+				return err
 			}
 		} else {
 			emailSended = true
@@ -91,7 +95,7 @@ func (e *EmailProvider) Send(m interface{}) (err error) {
 	return
 }
 
-func (e *EmailProvider) SelectedProvider() (pn string) {
+func (e *EmailProvider) Selected() (pn string) {
 	provider := e.Providers.Value.(lib.Provider)
 	pn = provider.GetName()
 	return

@@ -1,9 +1,9 @@
 package sendgrid
 
 import (
+	"github.com/ivan-iver/hermes/models"
 	"github.com/notifik/config"
 	"github.com/sendgrid/sendgrid-go"
-	"github.com/ivan-iver/hermes/models"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
@@ -20,7 +20,8 @@ type Sendgrid struct {
 	ConunterM int64  `json:"counter_m,omitempty"`
 }
 
-func NewProvider() *Sendgrid {
+func NewProvider(cfgfile string) *Sendgrid {
+	Cfgfile = cfgfile
 	s := &Sendgrid{}
 	return s
 }
@@ -57,23 +58,23 @@ func (p *Sendgrid) SendEmail(emailI interface{}) (err error) {
 	}
 }
 
-func (p *Sendgrid) NewEmail(se interface{},s string, c interface{}) (ms interface{}, err error) {
+func (p *Sendgrid) NewEmail(se interface{}, s string, c interface{}) (ms interface{}, err error) {
 	var m = Email{}
 	m = NewEmail()
-	if err=m.AddSender(se);err!=nil{
-		return m,err
+	if err = m.AddSender(se); err != nil {
+		return m, err
 	}
-	if err=m.AddSubject(s);err!=nil{
-		return 
+	if err = m.AddSubject(s); err != nil {
+		return
 	}
-	if err=m.AddContent(c);err!=nil{
-		return 
+	if err = m.AddContent(c); err != nil {
+		return
 	}
 	ms = &m
 	return
 }
 
-func (p *Sendgrid) RefactorEmail(mail map[string]interface{})(ms interface{}, err error){
+func (p *Sendgrid) RefactorEmail(mail map[string]interface{}) (ms interface{}, err error) {
 	var m = Email{}
 	m = NewEmail()
 	m.AddSender(mail["sender"])

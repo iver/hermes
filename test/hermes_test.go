@@ -8,12 +8,13 @@ import (
 )
 
 var (
-	emailProvider hermes.EmailProvider
+	emailProvider *hermes.EmailProvider
+	configFile = "provider.conf"
 )
 
 func TestCreateHermesOK(t *testing.T) {
 	var err error
-	if emailProvider, err = hermes.New(); err != nil {
+	if emailProvider, err = hermes.New(configFile); err != nil {
 		t.Error("hermes:New()", err)
 	}
 	if name := emailProvider.Selected(); name != "mailchimp" {

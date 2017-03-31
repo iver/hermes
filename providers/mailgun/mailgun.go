@@ -21,7 +21,8 @@ type Mailgun struct {
 	CounterM     int64  `json:"counter_m,omitempty"`
 }
 
-func NewProvider() *Mailgun {
+func NewProvider(cfgfile string) *Mailgun {
+	Cfgfile = cfgfile
 	s := &Mailgun{}
 	return s
 }

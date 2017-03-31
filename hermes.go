@@ -13,15 +13,16 @@ var (
 )
 
 type EmailProvider struct {
+	ConfigFile string
 	Providers *ring.Ring
 }
 
-func New() (e EmailProvider, err error) {
+func New(cfile string) (e *EmailProvider, err error) {
 	var invalidProviders = 0
-	e = EmailProvider{}
+	e = &EmailProvider{ConfigFile:cfile}
 	e.Providers = ring.New(len(DefaultOrder))
 	for i := 0; i < e.Providers.Len(); i++ {
-		if p, err := providers.NewProvider([]string{DefaultOrder[i]}); err == nil {
+		if p, err := providers.NewProvider(cfile, []string{DefaultOrder[i]}); err == nil {
 			provider := p.(lib.Provider)
 			provider.Init()
 			e.Providers.Value = provider
@@ -53,7 +54,7 @@ func (e *EmailProvider) Order() string {
 func (e *EmailProvider) Sort(order ...string) (err error) {
 	var invalidProviders = 0
 	for i := 0; i < e.Providers.Len(); i++ {
-		if p, err := providers.NewProvider([]string{order[i]}); err == nil {
+		if p, err := providers.NewProvider(e.ConfigFile,[]string{order[i]}); err == nil {
 			provider := p.(lib.Provider)
 			provider.Init()
 			e.Providers.Value = provider

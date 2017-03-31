@@ -1,9 +1,9 @@
 package mailchimp
 
 import (
-	"github.com/notifik/config"
-	"github.com/mattbaird/gochimp"
 	"github.com/ivan-iver/hermes/models"
+	"github.com/mattbaird/gochimp"
+	"github.com/notifik/config"
 )
 
 var (
@@ -11,14 +11,15 @@ var (
 )
 
 type Mailchimp struct {
-	ID          int64                 `json:"id,omitempty"`
-	Name        string                `json:"name,omitempty"`
-	APIKey      string                `json:"api_key,omitempty"`
-	MandrillAPI *gochimp.MandrillAPI  `json:"mandril_api,omitempty"`
-	CounterM    int64                 `json:"counter_m,omitempty"`
+	ID          int64                `json:"id,omitempty"`
+	Name        string               `json:"name,omitempty"`
+	APIKey      string               `json:"api_key,omitempty"`
+	MandrillAPI *gochimp.MandrillAPI `json:"mandril_api,omitempty"`
+	CounterM    int64                `json:"counter_m,omitempty"`
 }
 
-func NewProvider() *Mailchimp {
+func NewProvider(cfgfile string) *Mailchimp {
+	Cfgfile = cfgfile
 	s := &Mailchimp{}
 	return s
 }
@@ -50,23 +51,23 @@ func (p *Mailchimp) SendEmail(emailI interface{}) (err error) {
 	return
 }
 
-func (p *Mailchimp) NewEmail(se interface{}, s string,c interface{}) (m interface{}, err error) {
+func (p *Mailchimp) NewEmail(se interface{}, s string, c interface{}) (m interface{}, err error) {
 	var mm = Email{}
-	if err=mm.AddSender(se);err!=nil{
-		return m,err
+	if err = mm.AddSender(se); err != nil {
+		return m, err
 	}
-	if err=mm.AddSubject(s);err!=nil{
-		return 
+	if err = mm.AddSubject(s); err != nil {
+		return
 	}
-	if err=mm.AddContent(c);err!=nil{
-		return 
+	if err = mm.AddContent(c); err != nil {
+		return
 	}
 
 	m = &mm
 	return
 }
 
-func (p *Mailchimp) RefactorEmail(mail map[string]interface{})(ms interface{}, err error){
+func (p *Mailchimp) RefactorEmail(mail map[string]interface{}) (ms interface{}, err error) {
 	var m = Email{}
 	m.AddSender(mail["sender"])
 	m.AddSubject(mail["subject"].(string))

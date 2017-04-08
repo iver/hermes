@@ -4,14 +4,14 @@ VERSION := ($(shell git rev-parse --short HEAD))
 
 export VERSION;
 
+init:
+	mkdir -p bin log
+	go get -v -u ./...
+
 build:
 	go build -v -ldflags "-X github.com/ivan-iver/hermes/lib.hash=${VERSION}" -o bin/hermes github.com/ivan-iver/hermes
 	@cp templates/app.conf bin/
 
 clean:
 	rm -r bin/*
-
-init:
-	mkdir -p bin log
-	go get -v -u ./...
 

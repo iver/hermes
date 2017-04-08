@@ -9,3 +9,7 @@ branches:
     - develop
 
 # install:
+#
+
+script:
+  - make build

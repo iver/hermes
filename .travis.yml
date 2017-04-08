@@ -8,8 +8,8 @@ branches:
     - master
     - develop
 
-# install:
-#
+install:
+  - make init
 
 script:
   - make build

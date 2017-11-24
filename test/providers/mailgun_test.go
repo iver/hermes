@@ -1,30 +1,73 @@
 package providers_test
 
 import (
-	"os"
+	"github.com/iver/hermes/models"
+	"github.com/iver/hermes/providers/mailgun"
+	"log"
 	"testing"
-
-	"github.com/ivan-iver/hermes/models"
-	p "github.com/ivan-iver/hermes/providers/mailgun"
 )
 
-func TestMailgunSendEmail(t *testing.T) {
-	var provider = p.Mailgun{}
-	userEmail := os.Getenv("MG_EMAIL_TO")
-	template := "<h1>notifik</h1><br><h4>Hola desde mailgun</h4>"
-	rec := []string{userEmail}
-	email := models.Email{
-		Subject:     "Hola desde mailgun",
-		SenderEmail: "person@hermes.mx",
-		SenderName:  "Alguien",
-		Recipients:  rec,
-		Content:     template,
+func TestCreateMailgunProviderOK(t *testing.T) {
+	var provider = mailgun.Mailgun{}
+	if err := provider.Init(); err != nil {
+		t.Error("provider:Init()-", err)
 	}
 
-	if err := provider.SendEmail(email); err != nil {
-		t.Error("Ya valio: ", err)
+	if name := provider.GetName(); name != "mailgun" {
+		log.Println("Provider name:", name)
+		t.Error("provider:Wrong Name")
 	}
-
 	return
-
 }
+
+func TestCreateMailgunProviderFail(t *testing.T) {
+	mailgun.Cfgfile = "other.conf"
+	defer func() {
+		if r := recover(); r != nil {
+			mailgun.Cfgfile = `provider.conf`
+		}
+		return
+	}()
+	var provider = mailgun.Mailgun{}
+	if err := provider.Init(); err == nil {
+		t.Error("provider:Init()-", err)
+	}
+	return
+}
+
+func TestCreateMailgunEmailOK(t *testing.T) {
+	var provider = ValidMailgunProvider()
+	var sender = models.Sender{Name: "Un Friend", Email: "mailgun@hermes.mx"}
+	var subject = "Welcome!!"
+	var content = models.Content{Value: "Hello from mailgun"}
+	if _, err := provider.NewEmail(sender, subject, content); err != nil {
+		t.Error("provider:NewEmail()", err)
+	}
+	return
+}
+
+func TestCreateMailgunEmailFail(t *testing.T) {
+	var provider = ValidMailgunProvider()
+	var sender = "sender"
+	var subject = "Welcome!!"
+	var content = models.Content{Value: "Hello from mailgun"}
+	if _, err := provider.NewEmail(sender, subject, content); err == nil {
+		t.Error("provider:NewEmail()", err)
+	}
+	return
+}
+
+func TestMailgunSendEmailOK(t *testing.T) {
+	var provider = ValidMailgunProvider()
+	var emailM = ValidMailgunEmail()
+	if err := provider.SendEmail(emailM); err != nil {
+		t.Error("provider:SendEmail()-", err)
+	}
+	return
+}
+
+/*func TestMailgunSendEmailFail(t *testing.T) {
+	//TODO:
+	return
+}
+*/

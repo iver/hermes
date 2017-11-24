@@ -1,59 +1,81 @@
-package providers
+package mailchimp
 
 import (
-	"fmt"
-    "os"
-	"github.com/ivan-iver/hermes/models"
+	"github.com/iver/hermes/models"
 	"github.com/mattbaird/gochimp"
+	"github.com/notifik/config"
+)
+
+var (
+	Cfgfile = `provider.conf`
 )
 
 type Mailchimp struct {
+	ID          int64                `json:"id,omitempty"`
+	Name        string               `json:"name,omitempty"`
+	APIKey      string               `json:"api_key,omitempty"`
+	MandrillAPI *gochimp.MandrillAPI `json:"mandril_api,omitempty"`
+	CounterM    int64                `json:"counter_m,omitempty"`
 }
 
-//  sendemail function with mailchimp provider
-func (p *Mailchimp) SendEmail(email models.Email) (err error) {
+func NewProvider(cfgfile string) *Mailchimp {
+	Cfgfile = cfgfile
+	s := &Mailchimp{}
+	return s
+}
 
-    apiKey := os.Getenv("MANDRILL_KEY")
-	mandrillAPI, err := gochimp.NewMandrill(apiKey)
+func (p *Mailchimp) GetName() (name string) {
+	return `mailchimp`
+}
+
+func (p *Mailchimp) Init() (err error) {
+	c, err := config.NewConfig(Cfgfile)
+	p.Name = p.GetName()
+	p.APIKey, err = c.Property(p.Name, "apikey")
 	if err != nil {
-		fmt.Println("Error instantiating client")
-		return err
+		return models.ErrInvalidAPIKey
 	}
-
-	templateName := "welcome email"
-	contentVar := gochimp.Var{"main", email.Content}
-	content := []gochimp.Var{contentVar}
-
-	_, err = mandrillAPI.TemplateAdd(templateName, fmt.Sprintf("%s", contentVar.Content), true)
-	if err != nil {
-		fmt.Printf("Error adding template: %v", err)
-		return err
+	if p.MandrillAPI, err = gochimp.NewMandrill(p.APIKey); err != nil {
+		return models.ErrInvalidAPIKey
 	}
-
-	defer mandrillAPI.TemplateDelete(templateName)
-
-	renderedTemplate, err := mandrillAPI.TemplateRender(templateName, content, nil)
-	if err != nil {
-		fmt.Printf("Error rendering template: %v", err)
-		return err
-	}
-	eml := email.Recipients[0]
-	recipients := []gochimp.Recipient{
-		gochimp.Recipient{Email: eml},
-	}
-
-	message := gochimp.Message{
-		Html:      renderedTemplate,
-		Subject:   email.Subject,
-		FromEmail: email.SenderEmail,
-		FromName:  email.SenderName,
-		To:        recipients,
-	}
-
-	if _, err = mandrillAPI.MessageSend(message, false); err != nil {
-		fmt.Println("Error sending message")
-		return err
-	}
-
 	return
+}
+
+//  SendEmail function with mailchimp provider
+func (p *Mailchimp) SendEmail(emailI interface{}) (err error) {
+	email := *emailI.(*Email)
+	_, err = p.MandrillAPI.MessageSend(email.GochimpM, false)
+	if err != nil {
+		return models.ErrInvalidMessage
+	}
+	return
+}
+
+func (p *Mailchimp) NewEmail(se interface{}, s string, c interface{}) (m interface{}, err error) {
+	var mm = Email{}
+	if err = mm.AddSender(se); err != nil {
+		return m, err
+	}
+	if err = mm.AddSubject(s); err != nil {
+		return
+	}
+	if err = mm.AddContent(c); err != nil {
+		return
+	}
+
+	m = &mm
+	return
+}
+
+func (p *Mailchimp) RefactorEmail(mail map[string]interface{}) (ms interface{}, err error) {
+	var m = Email{}
+	m.AddSender(mail["sender"])
+	m.AddSubject(mail["subject"].(string))
+	m.AddContent(mail["content"])
+	m.AddRecipients(mail["recipients"])
+	ms = &m
+	return
+}
+func (p *Mailchimp) ToString() string {
+	return "Name:" + p.Name + "-APIKey:" + p.APIKey
 }

@@ -3,7 +3,7 @@ package mailgun
 import (
 	"strings"
 
-	"github.com/ivan-iver/hermes/models"
+	"github.com/iver/hermes/models"
 	"github.com/notifik/config"
 	"gopkg.in/mailgun/mailgun-go.v1"
 )

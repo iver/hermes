@@ -1,11 +1,11 @@
 package providers
 
 import (
-	"github.com/ivan-iver/hermes/lib"
-	"github.com/ivan-iver/hermes/models"
-	"github.com/ivan-iver/hermes/providers/mailchimp"
-	"github.com/ivan-iver/hermes/providers/mailgun"
-	"github.com/ivan-iver/hermes/providers/sendgrid"
+	"github.com/iver/hermes/lib"
+	"github.com/iver/hermes/models"
+	"github.com/iver/hermes/providers/mailchimp"
+	"github.com/iver/hermes/providers/mailgun"
+	"github.com/iver/hermes/providers/sendgrid"
 )
 
 func NewProvider(cfile string, options []string) (p interface{}, err error) {

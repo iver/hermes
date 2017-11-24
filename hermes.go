@@ -3,9 +3,9 @@ package hermes
 import (
 	"container/ring"
 
-	"github.com/ivan-iver/hermes/lib"
-	"github.com/ivan-iver/hermes/models"
-	"github.com/ivan-iver/hermes/providers"
+	"github.com/iver/hermes/lib"
+	"github.com/iver/hermes/models"
+	"github.com/iver/hermes/providers"
 )
 
 var (
@@ -14,12 +14,12 @@ var (
 
 type EmailProvider struct {
 	ConfigFile string
-	Providers *ring.Ring
+	Providers  *ring.Ring
 }
 
 func New(cfile string) (e *EmailProvider, err error) {
 	var invalidProviders = 0
-	e = &EmailProvider{ConfigFile:cfile}
+	e = &EmailProvider{ConfigFile: cfile}
 	e.Providers = ring.New(len(DefaultOrder))
 	for i := 0; i < e.Providers.Len(); i++ {
 		if p, err := providers.NewProvider(cfile, []string{DefaultOrder[i]}); err == nil {
@@ -54,7 +54,7 @@ func (e *EmailProvider) Order() string {
 func (e *EmailProvider) Sort(order ...string) (err error) {
 	var invalidProviders = 0
 	for i := 0; i < e.Providers.Len(); i++ {
-		if p, err := providers.NewProvider(e.ConfigFile,[]string{order[i]}); err == nil {
+		if p, err := providers.NewProvider(e.ConfigFile, []string{order[i]}); err == nil {
 			provider := p.(lib.Provider)
 			provider.Init()
 			e.Providers.Value = provider

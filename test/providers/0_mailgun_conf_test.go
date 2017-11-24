@@ -1,8 +1,8 @@
 package providers_test
 
 import (
-	"github.com/ivan-iver/hermes/models"
-	"github.com/ivan-iver/hermes/providers/mailgun"
+	"github.com/iver/hermes/models"
+	"github.com/iver/hermes/providers/mailgun"
 )
 
 //ValidMailgunProvider

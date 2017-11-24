@@ -1,8 +1,8 @@
 package providers_test
 
 import (
-	"github.com/ivan-iver/hermes/models"
-	"github.com/ivan-iver/hermes/providers/sendgrid"
+	"github.com/iver/hermes/models"
+	"github.com/iver/hermes/providers/sendgrid"
 )
 
 //ValidSendgridProvider
@@ -16,11 +16,11 @@ func ValidSendgridProvider() (e *sendgrid.Sendgrid) {
 //ValidEmail
 func ValidSendgridEmail() (e *sendgrid.Email) {
 	emailp := sendgrid.NewEmail()
-	email:=&emailp
-	sender:=models.Sender{
-			Email: "sendgrid@hermes.com",
-			Name:  "a friend",
-		}
+	email := &emailp
+	sender := models.Sender{
+		Email: "sendgrid@hermes.com",
+		Name:  "a friend",
+	}
 	email.AddSender(sender)
 	email.AddContent(
 		models.Content{
@@ -32,5 +32,3 @@ func ValidSendgridEmail() (e *sendgrid.Email) {
 	e = email
 	return
 }
-
-

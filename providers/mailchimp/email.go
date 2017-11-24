@@ -3,7 +3,7 @@ package mailchimp
 import (
 	"fmt"
 
-	"github.com/ivan-iver/hermes/models"
+	"github.com/iver/hermes/models"
 	"github.com/mattbaird/gochimp"
 	"github.com/notifik/config"
 )

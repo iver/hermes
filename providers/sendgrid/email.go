@@ -1,40 +1,39 @@
 package sendgrid
 
 import (
-	"github.com/ivan-iver/hermes/models"
+	"github.com/iver/hermes/models"
 	mail "github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
 type Email struct {
-    PlainEmail  models.Email     `json:"plain_email,omitempty"`
-	SendgridM   *mail.SGMailV3    `json:"id,omitempty"`
+	PlainEmail models.Email   `json:"plain_email,omitempty"`
+	SendgridM  *mail.SGMailV3 `json:"id,omitempty"`
 }
 
 func (m *Email) AddSender(s interface{}) (err error) {
-	sender,ok:=s.(models.Sender)
-	if !ok{
+	sender, ok := s.(models.Sender)
+	if !ok {
 		return models.ErrInvalidSender
 	}
-	m.PlainEmail.Sender=&sender
+	m.PlainEmail.Sender = &sender
 	m.SendgridM.From.Name = sender.Name
-	
+
 	m.SendgridM.From.Address = sender.Email
 	return
 }
 
-
 func (m *Email) AddSubject(s string) (err error) {
 	m.SendgridM.Subject = s
-	m.PlainEmail.Subject=&s
+	m.PlainEmail.Subject = &s
 	return
 }
 
 func (m *Email) AddRecipients(r interface{}) (err error) {
-	allrecipient,ok:=r.(models.Recipients)
-	if !ok{
+	allrecipient, ok := r.(models.Recipients)
+	if !ok {
 		return models.ErrInvalidRecipients
 	}
-	m.PlainEmail.Recipients=&allrecipient
+	m.PlainEmail.Recipients = &allrecipient
 	recipients := []*mail.Email{}
 
 	for _, email := range allrecipient.To {
@@ -48,20 +47,20 @@ func (m *Email) AddRecipients(r interface{}) (err error) {
 }
 
 func (m *Email) AddAttachment(a interface{}) (err error) {
-	attachment,ok:=a.(models.Attachment)
-	if !ok{
+	attachment, ok := a.(models.Attachment)
+	if !ok {
 		return models.ErrInvalidAttachment
 	}
-	m.PlainEmail.Attachments = append(m.PlainEmail.Attachments,&attachment)
+	m.PlainEmail.Attachments = append(m.PlainEmail.Attachments, &attachment)
 	return
 }
 
 func (m *Email) AddTemplate(t interface{}) (err error) {
-	template,ok:=t.(models.Template)
-	if !ok{
+	template, ok := t.(models.Template)
+	if !ok {
 		return models.ErrInvalidTemplate
 	}
-	m.PlainEmail.Template=&template
+	m.PlainEmail.Template = &template
 	return
 }
 
@@ -74,19 +73,19 @@ func NewEmail() Email {
 }
 
 func (m *Email) AddContent(c interface{}) (err error) {
-	content,ok:=c.(models.Content)
-	if !ok{
+	content, ok := c.(models.Content)
+	if !ok {
 		return models.ErrInvalidContent
 	}
-	m.PlainEmail.Content = append(m.PlainEmail.Content,&content)
+	m.PlainEmail.Content = append(m.PlainEmail.Content, &content)
 	contentM := mail.NewContent("text/plain", content.Value)
 	m.SendgridM.AddContent(contentM)
 	return
 }
 
-func (m *Email) GetPlainEmail() (email interface{}){
-   email=&m.PlainEmail
-   return
+func (m *Email) GetPlainEmail() (email interface{}) {
+	email = &m.PlainEmail
+	return
 }
 
 func (e *Email) GetInfo() map[string]interface{} {

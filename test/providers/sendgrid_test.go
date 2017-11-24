@@ -4,8 +4,8 @@ import (
 	"log"
 	"testing"
 
-	"github.com/ivan-iver/hermes/models"
-	"github.com/ivan-iver/hermes/providers/sendgrid"
+	"github.com/iver/hermes/models"
+	"github.com/iver/hermes/providers/sendgrid"
 )
 
 func TestCreateSendgridProviderOK(t *testing.T) {

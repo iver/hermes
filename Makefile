@@ -9,7 +9,7 @@ init:
 	go get -v -u ./...
 
 build:
-	go build -v -ldflags "-X github.com/ivan-iver/hermes/lib.hash=${VERSION}" -o bin/hermes github.com/ivan-iver/hermes
+	go build -v -ldflags "-X github.com/iver/hermes/lib.hash=${VERSION}" -o bin/hermes github.com/iver/hermes
 	@cp templates/app.conf bin/
 
 clean:

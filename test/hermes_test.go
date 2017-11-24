@@ -4,12 +4,12 @@ import (
 	"log"
 	"testing"
 
-	"github.com/ivan-iver/hermes"
+	"github.com/iver/hermes"
 )
 
 var (
 	emailProvider *hermes.EmailProvider
-	configFile = "provider.conf"
+	configFile    = "provider.conf"
 )
 
 func TestCreateHermesOK(t *testing.T) {

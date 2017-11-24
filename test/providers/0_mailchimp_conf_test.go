@@ -1,8 +1,8 @@
 package providers_test
 
 import (
-	"github.com/ivan-iver/hermes/models"
-	"github.com/ivan-iver/hermes/providers/mailchimp"
+	"github.com/iver/hermes/models"
+	"github.com/iver/hermes/providers/mailchimp"
 )
 
 //ValidMailchimpProvider
@@ -32,5 +32,3 @@ func ValidMailchimpEmail() (e *mailchimp.Email) {
 	e = email
 	return
 }
-
-

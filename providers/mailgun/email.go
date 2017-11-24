@@ -1,7 +1,7 @@
 package mailgun
 
 import (
-	"github.com/ivan-iver/hermes/models"
+	"github.com/iver/hermes/models"
 	"gopkg.in/mailgun/mailgun-go.v1"
 )
 
